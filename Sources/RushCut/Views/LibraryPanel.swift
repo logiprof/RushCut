@@ -24,20 +24,17 @@ struct LibraryPanel: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("", selection: $model.libraryTab) {
-                ForEach(LibraryTab.allCases) { tab in
-                    Label(tab.label, systemImage: tab.icon).tag(tab)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding(10)
+            LibraryTabBar(selection: $model.libraryTab)
 
             Divider()
 
             switch model.libraryTab {
             case .media: mediaTab
-            case .text: TextPresetsView(model: model)
+            case .text: TextStylesLibrary(model: model)
+            case .stickers: StickersLibrary(model: model)
+            case .effects: EffectsLibrary(model: model)
+            case .transitions: TransitionsLibrary(model: model)
+            case .filters: FiltersLibrary(model: model)
             }
         }
         .background(Theme.panel)
@@ -216,92 +213,32 @@ struct MediaTile: View {
 }
 
 /// Modèles de texte prêts à l'emploi.
-struct TextPresetsView: View {
-    @ObservedObject var model: EditorModel
-
-    static var presets: [(String, TextContent)] {
-        var title = TextContent()
-        title.string = "Titre"
-        title.fontSize = 0.1
-        title.shadowEnabled = true
-
-        var subtitle = TextContent()
-        subtitle.string = "Sous-titre"
-        subtitle.fontSize = 0.055
-        subtitle.bold = false
-
-        var caption = TextContent()
-        caption.string = "Texte sur bandeau sombre"
-        caption.fontSize = 0.05
-        caption.bold = false
-        caption.backgroundEnabled = true
-        caption.backgroundColor = RGBA(r: 0, g: 0, b: 0, a: 0.7)
-
-        var outlined = TextContent()
-        outlined.string = "TEXTE CONTOURÉ"
-        outlined.fontSize = 0.08
-        outlined.strokeEnabled = true
-        outlined.strokeWidth = 0.1
-
-        var quote = TextContent()
-        quote.string = "« Une citation »"
-        quote.fontName = "Georgia"
-        quote.italic = true
-        quote.bold = false
-        quote.fontSize = 0.06
-
-        var callout = TextContent()
-        callout.string = "À retenir !"
-        callout.fontSize = 0.06
-        callout.color = RGBA(r: 0.1, g: 0.1, b: 0.1)
-        callout.backgroundEnabled = true
-        callout.backgroundColor = RGBA(r: 1, g: 0.82, b: 0.2, a: 1)
-        callout.backgroundCornerRadius = 0.4
-
-        return [("Titre", title), ("Sous-titre", subtitle), ("Bandeau sombre", caption),
-                ("Contour", outlined), ("Citation", quote), ("Encadré", callout)]
-    }
+/// Onglets de la bibliothèque, façon barre d'outils (icône + nom).
+struct LibraryTabBar: View {
+    @Binding var selection: LibraryTab
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Cliquez sur un modèle pour l'ajouter à la tête de lecture. Modifiez ensuite le texte dans l'inspecteur.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 10)], spacing: 10) {
-                    ForEach(Self.presets, id: \.0) { preset in
-                        Button {
-                            model.addText(preset.1)
-                        } label: {
-                            TextPresetPreview(text: preset.1, label: preset.0)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 2) {
+                ForEach(LibraryTab.allCases) { tab in
+                    Button { selection = tab } label: {
+                        VStack(spacing: 3) {
+                            Image(systemName: tab.icon).font(.system(size: 15))
+                            Text(tab.label).font(.system(size: 9.5))
                         }
-                        .buttonStyle(.plain)
+                        .frame(minWidth: 52)
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 2)
+                        .foregroundStyle(selection == tab ? Color.accentColor : Color.secondary)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(selection == tab ? Color.accentColor.opacity(0.15) : Color.clear))
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
+                    .help(tab.label)
                 }
             }
-            .padding(10)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 6)
         }
-    }
-}
-
-struct TextPresetPreview: View {
-    let text: TextContent
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 4) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 6).fill(Color.black.opacity(0.55))
-                if let image = TextRenderer.render(text, canvas: CGSize(width: 320, height: 180)) {
-                    Image(nsImage: image.nsImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(8)
-                }
-            }
-            .frame(height: 66)
-            Text(label).font(.caption)
-        }
-        .contentShape(Rectangle())
     }
 }

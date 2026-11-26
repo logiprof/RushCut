@@ -34,6 +34,7 @@ struct ClipView: View {
             content(width: width)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
             fadeOverlay(width: width)
+            markers(width: width)
             Text(label)
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(.white)
@@ -67,11 +68,56 @@ struct ClipView: View {
         .help(helpText)
     }
 
+    // MARK: - Repères (transition, images clés, vitesse, effets)
+
+    @ViewBuilder
+    private func markers(width: CGFloat) -> some View {
+        let times = Set(clip.keyframes.values.flatMap { $0.map { $0.time.ticks } }).sorted()
+        ZStack(alignment: .topLeading) {
+            ForEach(times, id: \.self) { ticks in
+                Image(systemName: "diamond.fill")
+                    .font(.system(size: 7))
+                    .foregroundStyle(Color.white)
+                    .shadow(radius: 1)
+                    .offset(x: CGFloat(RTime(ticks: ticks).seconds * pps) - 3.5, y: row.height - 10)
+            }
+            HStack(spacing: 3) {
+                if clip.speed.rate != 1 {
+                    Text(String(format: "×%.2g", clip.speed.rate))
+                }
+                if !clip.effects.isEmpty && !clip.isEffectOnly { Image(systemName: "sparkles") }
+                if clip.filter != nil && !clip.isEffectOnly { Image(systemName: "camera.filters") }
+                if clip.mask != nil { Image(systemName: "circle.lefthalf.filled") }
+                if clip.animIn != nil || clip.animOut != nil || clip.animLoop != nil { Image(systemName: "wand.and.rays") }
+            }
+            .font(.system(size: 8, weight: .bold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 3)
+            .background(Capsule().fill(Color.black.opacity(0.45)))
+            .frame(width: max(0, width - 4), alignment: .trailing)
+            .offset(y: 3)
+            .opacity(width > 60 ? 1 : 0)
+            if let tr = clip.transitionIn {
+                let w = max(10, CGFloat(tr.duration.seconds * pps))
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.white.opacity(0.22))
+                    .overlay(Image(systemName: "square.split.2x1.fill").font(.system(size: 9)).foregroundStyle(.white))
+                    .frame(width: min(w, width), height: min(18, row.height - 6))
+                    .offset(y: (row.height - min(18, row.height - 6)) / 2)
+                    .help("Transition « \(TransitionCatalog.byID[tr.type]?.name ?? tr.type) »")
+            }
+        }
+        .frame(width: width, height: row.height, alignment: .topLeading)
+        .allowsHitTesting(false)
+    }
+
     // MARK: - Contenu
 
     private var baseColor: Color {
         if isMissing { return Theme.missing }
         if clip.isText { return Theme.text }
+        if clip.isSticker { return Theme.sticker }
+        if clip.isEffectOnly { return clip.effects.isEmpty ? Theme.filter : Theme.effect }
         if isAudioRow { return Theme.audio }
         switch media?.kind {
         case .image: return Theme.image
@@ -93,23 +139,24 @@ struct ClipView: View {
 
     @ViewBuilder
     private func content(width: CGFloat) -> some View {
-        if clip.isText {
+        if clip.isText || clip.isSticker || clip.isEffectOnly {
             HStack {
-                Image(systemName: "textformat").foregroundStyle(.white.opacity(0.7)).padding(.leading, 6)
                 Spacer()
+                Image(systemName: clip.isText ? "textformat" : (clip.isSticker ? "face.smiling" : (clip.effects.isEmpty ? "camera.filters" : "sparkles")))
+                    .foregroundStyle(.white.opacity(0.7)).padding(.trailing, 6)
             }
             .frame(maxHeight: .infinity)
         } else if isAudioRow || media?.kind == .audio {
             WaveformShape(peaks: library.waveforms[clip.mediaID ?? UUID()] ?? [], sourceIn: clip.sourceIn,
-                          pixelsPerSecond: pps, gain: clip.audio.linearGain)
+                          pixelsPerSecond: pps / max(0.01, clip.speed.rate), gain: clip.audio.linearGain)
                 .fill(Color.white.opacity(0.55))
                 .padding(.vertical, 4)
         } else {
             VStack(spacing: 0) {
-                ThumbnailStrip(strip: library.strips[clip.mediaID ?? UUID()], sourceIn: clip.sourceIn, pixelsPerSecond: pps)
+                ThumbnailStrip(strip: library.strips[clip.mediaID ?? UUID()], sourceIn: clip.sourceIn, pixelsPerSecond: pps / max(0.01, clip.speed.rate))
                 if hasAudio && row.height >= 56 {
                     WaveformShape(peaks: library.waveforms[clip.mediaID ?? UUID()] ?? [], sourceIn: clip.sourceIn,
-                                  pixelsPerSecond: pps, gain: clip.audio.linearGain)
+                                  pixelsPerSecond: pps / max(0.01, clip.speed.rate), gain: clip.audio.linearGain)
                         .fill(Color.white.opacity(0.5))
                         .frame(height: 16)
                         .background(Color.black.opacity(0.25))

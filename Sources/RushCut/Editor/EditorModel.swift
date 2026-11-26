@@ -4,10 +4,28 @@ import AVFoundation
 import UniformTypeIdentifiers
 
 enum LibraryTab: String, CaseIterable, Identifiable {
-    case media, text
+    case media, text, stickers, effects, transitions, filters
     var id: String { rawValue }
-    var label: String { self == .media ? "Médias" : "Texte" }
-    var icon: String { self == .media ? "photo.on.rectangle" : "textformat" }
+    var label: String {
+        switch self {
+        case .media: return "Médias"
+        case .text: return "Texte"
+        case .stickers: return "Autocollants"
+        case .effects: return "Effets"
+        case .transitions: return "Transitions"
+        case .filters: return "Filtres"
+        }
+    }
+    var icon: String {
+        switch self {
+        case .media: return "photo.on.rectangle"
+        case .text: return "textformat"
+        case .stickers: return "face.smiling"
+        case .effects: return "sparkles"
+        case .transitions: return "square.split.2x1"
+        case .filters: return "camera.filters"
+        }
+    }
 }
 
 /// Projet ouvert : toutes les modifications passent par `apply`, qui les rend annulables,
@@ -27,6 +45,8 @@ final class EditorModel: ObservableObject {
     @Published var exportPresented = false
     @Published var libraryTab: LibraryTab = .media
     @Published var importInProgress = false
+    @Published var inspectorTab: InspectorTab = .base
+    var attributeClipboard: Clip?
     @Published var timelineVisibleWidth: CGFloat = 800
 
     let playback = PlaybackController()

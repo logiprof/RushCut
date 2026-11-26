@@ -36,6 +36,8 @@ struct InspectorPanel: View {
             return model.selection.count > 1 ? "Sélection" : "Projet"
         }
         if clip.isText { return "Texte" }
+        if clip.isSticker { return "Autocollant" }
+        if clip.isEffectOnly { return clip.filter != nil && clip.effects.isEmpty ? "Filtre" : "Effet" }
         switch model.project.media(clip.mediaID)?.kind {
         case .image: return "Image"
         case .audio: return "Audio"
@@ -125,7 +127,48 @@ struct ClipInspector: View {
         model.updateClip(clip.id, name, coalesce: key, body)
     }
 
+    private var tabs: [InspectorTab] {
+        if clip.isEffectOnly { return clip.effects.isEmpty && clip.filter != nil ? [.ajuster] : [.effets] }
+        if clip.isText { return [.texte, .base, .animation, .effets, .incrustation] }
+        if clip.isSticker { return [.base, .animation, .effets, .incrustation] }
+        if onAudioTrack || media?.kind == .audio { return [.audio, .vitesse] }
+        var list: [InspectorTab] = [.base, .animation]
+        if media?.kind == .video { list.append(.vitesse) }
+        list += [.ajuster, .masque, .effets, .incrustation]
+        if hasAudio { list.append(.audio) }
+        return list
+    }
+
     var body: some View {
+        let tabs = self.tabs
+        let tab = tabs.contains(model.inspectorTab) ? model.inspectorTab : tabs[0]
+        if tabs.count > 1 {
+            InspectorTabBar(tabs: tabs, selection: tab) { model.inspectorTab = $0 }
+        }
+        switch tab {
+        case .texte:
+            if let text = clip.text { TextInspector(model: model, clip: clip, text: text) }
+        case .base: baseTab
+        case .animation: AnimationTab(model: model, clip: clip)
+        case .vitesse: SpeedTab(model: model, clip: clip)
+        case .ajuster:
+            if clip.isEffectOnly { FilterSection(model: model, clip: clip) } else { AdjustTab(model: model, clip: clip) }
+        case .masque: MaskTab(model: model, clip: clip)
+        case .effets: EffectsTab(model: model, clip: clip)
+        case .incrustation: OverlayTab(model: model, clip: clip)
+        case .audio: audioTab
+        }
+        InspectorSection(title: "Attributs") {
+            HStack {
+                Button("Copier les attributs") { model.copyAttributes() }
+                Button("Coller") { model.pasteAttributes() }
+                    .disabled(model.attributeClipboard == nil)
+            }
+            .controlSize(.small)
+        }
+    }
+
+    @ViewBuilder private var baseTab: some View {
         InspectorSection(title: "Clip") {
             LabeledContent("Nom", value: clip.isText ? "Texte" : clip.name)
             LabeledContent("Début", value: clip.start.timecode(fps: model.fps))
@@ -133,67 +176,63 @@ struct ClipInspector: View {
             if let media {
                 LabeledContent("Source", value: media.kind == .audio ? media.kind.label : "\(media.kind.label) \(media.width)×\(media.height)")
             }
-            if clip.isText || media?.kind == .image {
+            if clip.isText || clip.isSticker || media?.kind == .image {
                 SliderField(title: "Durée (s)", value: clip.duration.seconds, range: 0.1...120, fractionDigits: 1) { v in
                     update("Durée", "duree") { $0.duration = RTime(seconds: v).snapped(fps: model.fps) }
                 }
             }
+            if clip.isSticker {
+                ColorPicker("Couleur", selection: Binding(get: { clip.stickerColor.cgColor }, set: { c in
+                    update("Couleur de l'autocollant", "stickerC") { $0.stickerColor = RGBA(cgColor: c) }
+                }), supportsOpacity: false)
+            }
         }
 
-        if let text = clip.text {
-            TextInspector(model: model, clip: clip, text: text)
-        }
-
-        if isVisual {
+        if isVisual || clip.isSticker {
             InspectorSection(title: "Position et taille") {
-                if !clip.isText {
+                if !clip.isText && !clip.isSticker {
                     Picker("Cadrage", selection: Binding(get: { clip.fit }, set: { v in update("Cadrage", "fit") { $0.fit = v } })) {
                         ForEach([FitMode.fit, .fill, .stretch], id: \.self) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                 }
-                SliderField(title: "Échelle", value: clip.transform.scale * 100, range: 5...500, unit: "%") { v in
-                    update("Échelle", "echelle") { $0.transform.scale = v / 100 }
-                }
-                SliderField(title: "Position X", value: clip.transform.positionX * 100, range: -100...100, unit: "%") { v in
-                    update("Position", "position") { $0.transform.positionX = v / 100 }
-                }
-                SliderField(title: "Position Y", value: clip.transform.positionY * 100, range: -100...100, unit: "%") { v in
-                    update("Position", "position") { $0.transform.positionY = v / 100 }
-                }
-                SliderField(title: "Rotation", value: clip.transform.rotation, range: -180...180, unit: "°") { v in
-                    update("Rotation", "rotation") { $0.transform.rotation = v }
-                }
+                KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .scale, factor: 100, range: 5...500, unit: "%")
+                KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .positionX, factor: 100, range: -100...100, unit: "%")
+                KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .positionY, factor: 100, range: -100...100, unit: "%")
+                KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .rotation, range: -180...180, unit: "°")
+                KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .opacity, factor: 100, range: 0...100, unit: "%")
                 HStack {
                     Toggle("Miroir horizontal", isOn: Binding(get: { clip.transform.flipH }, set: { v in update("Miroir", "flipH") { $0.transform.flipH = v } }))
                     Toggle("Vertical", isOn: Binding(get: { clip.transform.flipV }, set: { v in update("Miroir", "flipV") { $0.transform.flipV = v } }))
                 }
                 .toggleStyle(.checkbox)
-                SliderField(title: "Opacité", value: clip.opacity * 100, range: 0...100, unit: "%") { v in
-                    update("Opacité", "opacite") { $0.opacity = v / 100 }
+                KeyframeNavigator(model: model, playback: model.playback, clip: clip, props: [.scale, .positionX, .positionY, .rotation, .opacity])
+                Button("Réinitialiser") {
+                    update("Réinitialiser la position", "reset") { c in
+                        c.transform = Transform(); c.opacity = 1
+                        for p in [KeyProp.scale, .positionX, .positionY, .rotation, .opacity] { c.keyframes[p.rawValue] = nil }
+                    }
                 }
-                Button("Réinitialiser") { update("Réinitialiser la position", "reset") { $0.transform = Transform(); $0.opacity = 1 } }
             }
-            if !clip.isText, let media {
+            if !clip.isText && !clip.isSticker, let media {
                 CropInspector(model: model, clip: clip, source: media.pixelSize)
             }
         }
+    }
 
-        if hasAudio {
-            InspectorSection(title: "Audio") {
-                SliderField(title: "Volume", value: clip.audio.volumeDB, range: -60...0, unit: "dB", fractionDigits: 1) { v in
-                    update("Volume", "volume") { $0.audio.volumeDB = v }
-                }
-                let maxFade = max(0.1, min(10, clip.duration.seconds / 2))
-                SliderField(title: "Fondu d'ouverture", value: clip.audio.fadeIn.seconds, range: 0...maxFade, unit: "s", fractionDigits: 2) { v in
-                    update("Fondu d'ouverture", "fadeIn") { $0.audio.fadeIn = RTime(seconds: v).snapped(fps: model.fps) }
-                }
-                SliderField(title: "Fondu de fermeture", value: clip.audio.fadeOut.seconds, range: 0...maxFade, unit: "s", fractionDigits: 2) { v in
-                    update("Fondu de fermeture", "fadeOut") { $0.audio.fadeOut = RTime(seconds: v).snapped(fps: model.fps) }
-                }
-                if !onAudioTrack && media?.kind == .video {
-                    Button("Détacher l'audio") { model.detachAudio() }
-                }
+    @ViewBuilder private var audioTab: some View {
+        InspectorSection(title: "Audio") {
+            KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .volume, range: -60...0, unit: "dB", fractionDigits: 1)
+            KeyframeNavigator(model: model, playback: model.playback, clip: clip, props: [.volume])
+            let maxFade = max(0.1, min(10, clip.duration.seconds / 2))
+            SliderField(title: "Fondu d'ouverture", value: clip.audio.fadeIn.seconds, range: 0...maxFade, unit: "s", fractionDigits: 2) { v in
+                update("Fondu d'ouverture", "fadeIn") { $0.audio.fadeIn = RTime(seconds: v).snapped(fps: model.fps) }
+            }
+            SliderField(title: "Fondu de fermeture", value: clip.audio.fadeOut.seconds, range: 0...maxFade, unit: "s", fractionDigits: 2) { v in
+                update("Fondu de fermeture", "fadeOut") { $0.audio.fadeOut = RTime(seconds: v).snapped(fps: model.fps) }
+            }
+            if !onAudioTrack && media?.kind == .video {
+                Button("Détacher l'audio") { model.detachAudio() }
             }
         }
     }

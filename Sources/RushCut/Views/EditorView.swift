@@ -86,6 +86,9 @@ enum Theme {
     static let audio = Color(red: 0.18, green: 0.52, blue: 0.30)
     static let text = Color(red: 0.48, green: 0.30, blue: 0.70)
     static let missing = Color(red: 0.70, green: 0.16, blue: 0.16)
+    static let sticker = Color(red: 0.78, green: 0.46, blue: 0.12)
+    static let effect = Color(red: 0.62, green: 0.22, blue: 0.48)
+    static let filter = Color(red: 0.30, green: 0.34, blue: 0.62)
     static let playhead = Color(red: 1.0, green: 0.30, blue: 0.30)
     static let panel = Color(nsColor: .underPageBackgroundColor)
 }
