@@ -44,13 +44,17 @@ struct TransportBar: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Text(playback.currentTime.timecode(fps: model.fps))
-                .font(.system(.body, design: .monospaced).weight(.semibold))
-                .foregroundStyle(.primary)
-            Text("/ \(playback.duration.timecode(fps: model.fps))")
-                .font(.system(.body, design: .monospaced))
-                .foregroundStyle(.secondary)
-            Spacer()
+            HStack(spacing: 4) {
+                Text(playback.currentTime.timecode(fps: model.fps))
+                    .font(.system(.callout, design: .monospaced).weight(.semibold))
+                    .foregroundStyle(.primary)
+                Text("/ \(playback.duration.timecode(fps: model.fps))")
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            }
+            .lineLimit(1)
+            .fixedSize()
+            Spacer(minLength: 8)
             Button { playback.seek(to: .zero) } label: { Image(systemName: "backward.end.fill") }
                 .help("Aller au début")
             Button { playback.step(frames: -1) } label: { Image(systemName: "backward.frame.fill") }
@@ -64,10 +68,14 @@ struct TransportBar: View {
                 .help("Image suivante (→)")
             Button { playback.seek(to: playback.duration) } label: { Image(systemName: "forward.end.fill") }
                 .help("Aller à la fin")
-            Spacer()
-            Text("\(model.project.settings.formatLabel) · \(model.project.settings.width)×\(model.project.settings.height)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Spacer(minLength: 8)
+            ViewThatFits {
+                Text("\(model.project.settings.formatLabel) · \(model.project.settings.width)×\(model.project.settings.height)")
+                Text(model.project.settings.formatLabel)
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
         }
         .buttonStyle(.borderless)
         .padding(.horizontal, 14)
