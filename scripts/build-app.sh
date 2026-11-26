@@ -1,5 +1,5 @@
 #!/bin/bash
-# Construit RushCut.app (arm64) et l'archive RushCut.zip dans dist/.
+# Construit RushCut.app (universelle : Apple Silicon + Intel) et l'archive RushCut.zip dans dist/.
 # Usage : ./scripts/build-app.sh [version] [numéro de build]
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -8,8 +8,8 @@ VERSION="${1:-0.1.0}"
 BUILD="${2:-1}"
 APP="dist/RushCut.app"
 
-swift build -c release --arch arm64
-BIN_DIR="$(swift build -c release --arch arm64 --show-bin-path)"
+swift build -c release --arch arm64 --arch x86_64
+BIN_DIR="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)"
 
 rm -rf dist
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -33,4 +33,5 @@ codesign --force --deep --sign - "$APP"
 codesign --verify --verbose "$APP"
 
 ditto -c -k --keepParent "$APP" dist/RushCut.zip
+lipo -info "$APP/Contents/MacOS/RushCut"
 echo "Application prête : $APP ($(du -sh "$APP" | cut -f1))"

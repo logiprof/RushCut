@@ -14,7 +14,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-26
+    # Les Mac Apple Silicon de GitHub sont souvent saturés : la compilation se fait sur un Mac Intel
+    # (macOS 26, Xcode 26) et produit une application universelle (Apple Silicon + Intel).
+    runs-on: macos-26-intel
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +33,7 @@ jobs:
       - name: Compiler
         run: |
           set -o pipefail
-          swift build -c release --arch arm64 2>&1 | tee build.log
+          swift build -c release 2>&1 | tee build.log
 
       - name: Tests
         run: |
