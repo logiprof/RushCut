@@ -107,11 +107,41 @@ enum SelfCapture {
         let windows = NSApp.windows.filter { $0.isVisible && $0.contentView != nil }
         Log.info("Capture : \(windows.count) fenêtre(s) visible(s) : \(windows.map { "\($0.title) \(Int($0.frame.width))×\(Int($0.frame.height))" })")
         guard let window = windows.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }),
-              let view = window.contentView?.superview ?? window.contentView,
-              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
-        view.cacheDisplay(in: view.bounds, to: rep)
-        if let data = rep.representation(using: .png, properties: [:]) {
-            try? data.write(to: url)
+              let view = window.contentView else { return }
+        Log.info("Vues : \(describe(view, depth: 0, maxDepth: 7).joined(separator: " | "))")
+        // 1. Rendu des calques (contenu SwiftUI compris).
+        let scale = window.backingScaleFactor
+        let size = view.bounds.size
+        if let space = CGColorSpace(name: CGColorSpace.sRGB),
+           let ctx = CGContext(data: nil, width: Int(size.width * scale), height: Int(size.height * scale), bitsPerComponent: 8,
+                               bytesPerRow: 0, space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+           let layer = view.layer {
+            ctx.scaleBy(x: scale, y: scale)
+            if !view.isFlipped {
+                // Les calques AppKit sont déjà dans le bon sens.
+            }
+            ctx.translateBy(x: 0, y: size.height)
+            ctx.scaleBy(x: 1, y: -1)
+            layer.render(in: ctx)
+            if let image = ctx.makeImage() {
+                let rep = NSBitmapImageRep(cgImage: image)
+                try? rep.representation(using: .png, properties: [:])?.write(to: url)
+            }
         }
+        // 2. Rendu classique des vues.
+        if let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
+            view.cacheDisplay(in: view.bounds, to: rep)
+            let alt = url.deletingPathExtension().appendingPathExtension("vues.png")
+            try? rep.representation(using: .png, properties: [:])?.write(to: alt)
+        }
+    }
+
+    private static func describe(_ view: NSView, depth: Int, maxDepth: Int) -> [String] {
+        var lines = ["\(String(repeating: ".", count: depth))\(type(of: view)) \(Int(view.frame.width))×\(Int(view.frame.height))"]
+        guard depth < maxDepth else { return lines }
+        for sub in view.subviews.prefix(6) {
+            lines.append(contentsOf: describe(sub, depth: depth + 1, maxDepth: maxDepth))
+        }
+        return lines
     }
 }
