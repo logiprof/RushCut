@@ -31,6 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             KeyboardMonitor.shared.install()
             AppModel.shared.checkRecovery()
             AppModel.shared.refreshProjects()
+            Log.info("Lancement terminé")
+            SelfCapture.scheduleIfRequested()
         }
     }
 
@@ -80,6 +82,32 @@ struct RootView: View {
             }
         } message: {
             Text("Le projet « \(app.recoveryURL?.deletingPathExtension().lastPathComponent ?? "") » était ouvert. Sa dernière sauvegarde automatique date de moins de 30 secondes avant la fermeture.")
+        }
+    }
+}
+
+/// Diagnostic : `RushCut --capture fichier.png` enregistre l'image de la fenêtre au bout de 8 secondes.
+/// Utilisé par la compilation automatique pour vérifier l'interface sans intervention.
+@MainActor
+enum SelfCapture {
+    static func scheduleIfRequested() {
+        let args = CommandLine.arguments
+        guard let i = args.firstIndex(of: "--capture"), i + 1 < args.count else { return }
+        let path = args[i + 1]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+            MainActor.assumeIsolated { capture(to: URL(fileURLWithPath: path)) }
+        }
+    }
+
+    static func capture(to url: URL) {
+        let windows = NSApp.windows.filter { $0.isVisible && $0.contentView != nil }
+        Log.info("Capture : \(windows.count) fenêtre(s) visible(s) : \(windows.map { "\($0.title) \(Int($0.frame.width))×\(Int($0.frame.height))" })")
+        guard let window = windows.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }),
+              let view = window.contentView?.superview ?? window.contentView,
+              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        if let data = rep.representation(using: .png, properties: [:]) {
+            try? data.write(to: url)
         }
     }
 }
