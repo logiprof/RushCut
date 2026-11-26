@@ -14,7 +14,7 @@ struct TrackRowLayout: Identifiable {
 
 enum TimelineMetrics {
     static let rulerHeight: CGFloat = 28
-    static let headerWidth: CGFloat = 132
+    static let headerWidth: CGFloat = 168
     static let rowSpacing: CGFloat = 4
     static let topPadding: CGFloat = 8
 
@@ -275,9 +275,9 @@ struct RulerView: View {
             Canvas { context, size in
                 let major = majorInterval(pps: pps)
                 let minor = major / 5
-                var t = 0.0
                 var i = 0
-                while CGFloat(t * pps) <= size.width {
+                while CGFloat(Double(i) * minor * pps) <= size.width {
+                    let t = Double(i) * minor
                     let x = CGFloat(t * pps)
                     let isMajor = i % 5 == 0
                     var path = Path()
@@ -285,10 +285,9 @@ struct RulerView: View {
                     path.addLine(to: CGPoint(x: x, y: size.height - (isMajor ? 12 : 5)))
                     context.stroke(path, with: .color(.secondary.opacity(isMajor ? 0.9 : 0.5)), lineWidth: 1)
                     if isMajor {
-                        context.draw(Text(label(t)).font(.system(size: 9.5).monospacedDigit()).foregroundColor(.secondary),
+                        context.draw(Text(label(t, major: major)).font(.system(size: 9.5).monospacedDigit()).foregroundColor(.secondary),
                                      at: CGPoint(x: x + 3, y: 2), anchor: .topLeading)
                     }
-                    t += minor
                     i += 1
                 }
             }
@@ -319,9 +318,10 @@ struct RulerView: View {
         return candidates.first { $0 * pps >= 70 } ?? 1800
     }
 
-    private func label(_ t: Double) -> String {
+    /// « 0:05 » pour les graduations d'une seconde ou plus, « 2,5 s » pour les plus fines.
+    private func label(_ t: Double, major: Double) -> String {
         let total = Int(t.rounded())
-        if t < 60 && t.truncatingRemainder(dividingBy: 1) != 0 {
+        if major < 1 {
             return String(format: "%.1f s", t).replacingOccurrences(of: ".", with: ",")
         }
         let h = total / 3600, m = (total / 60) % 60, s = total % 60

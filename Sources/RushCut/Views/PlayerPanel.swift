@@ -34,6 +34,7 @@ struct PlayerPanel: View {
             Divider()
             TransportBar(model: model, playback: playback)
         }
+        .background(Theme.panel)
     }
 }
 
