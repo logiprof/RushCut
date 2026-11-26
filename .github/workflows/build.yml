@@ -1,0 +1,80 @@
+name: Compilation et tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Choisir Xcode
+        run: |
+          ls -d /Applications/Xcode*.app || true
+          XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE"; fi
+          xcodebuild -version
+          swift --version
+          sw_vers
+
+      - name: Compiler
+        run: |
+          set -o pipefail
+          swift build -c release --arch arm64 2>&1 | tee build.log
+
+      - name: Tests
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tee test.log
+
+      - name: Créer l'application
+        run: |
+          VERSION="0.1.${{ github.run_number }}"
+          ./scripts/build-app.sh "$VERSION" "${{ github.run_number }}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Vérifier que l'application démarre
+        run: |
+          ./scripts/smoke-test.sh dist/RushCut.app
+
+      - name: Publier la version
+        if: ${{ !contains(github.event.head_commit.message, '[pas de version]') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="Version $VERSION de RushCut (lot MVP). Téléchargez RushCut.zip, ouvrez-le, puis glissez RushCut dans Applications. Voir le README pour la première ouverture."
+          gh release create "v$VERSION" dist/RushCut.zip --title "RushCut $VERSION" --notes "$NOTES" --latest
+
+      - name: Conserver les journaux en cas d'échec
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/ci-logs
+          cp build.log test.log smoke.log /tmp/ci-logs/ 2>/dev/null || true
+          grep -E "error:|warning: unre|failed|✘|Issue recorded|Expectation failed" build.log test.log 2>/dev/null | head -300 > /tmp/ci-logs/resume.txt || true
+          cd /tmp/ci-logs
+          git init -q
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -q -b ci-logs
+          git add -A
+          git commit -q -m "Journaux de ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" ci-logs
+
+      - name: Annoter les erreurs
+        if: failure()
+        run: |
+          grep -hE "^/.*:[0-9]+:[0-9]+: error: " build.log test.log 2>/dev/null | head -40 | \
+            sed -E 's#^([^:]+):([0-9]+):([0-9]+): error: (.*)$#::error file=\1,line=\2,col=\3::\4#' || true

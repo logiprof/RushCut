@@ -1,0 +1,9 @@
+.build/
+dist/
+.swiftpm/
+*.xcodeproj/
+DerivedData/
+.DS_Store
+build.log
+test.log
+smoke.log
