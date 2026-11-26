@@ -8,29 +8,30 @@ enum LayerContent {
     case video(trackID: CMPersistentTrackID, orientation: CGImagePropertyOrientation)
     case image(url: URL, animated: Bool)
     case text(TextContent)
+    case sticker(id: String, color: RGBA)
+    /// Clip d'effet : s'applique à tout ce qui est dessous.
+    case effect
     case missing(name: String)
 }
 
 struct LayerPlan {
-    var clipID: UUID
-    var start: RTime
-    var end: RTime
-    var sourceIn: RTime
+    var clip: Clip
+    var trackIndex: Int
     var content: LayerContent
-    var transform: Transform
-    var crop: CropRect
-    var fit: FitMode
-    var opacity: Double
     var isMain: Bool
     var isHidden: Bool
+
+    var start: RTime { clip.start }
+    var end: RTime { clip.end }
 }
 
 /// Tout ce qu'il faut pour dessiner une image du projet à un instant donné.
 struct RenderPlan {
     var background: RGBA
     var blurBackground: Bool
-    /// Dans l'ordre de dessin (le premier est au fond).
+    /// Dans l'ordre des pistes (la première est au fond).
     var layers: [LayerPlan]
+    var fps: Int = 30
 }
 
 /// Instruction unique couvrant toute la durée : le compositeur dessine à partir du plan.
@@ -50,7 +51,7 @@ final class RushInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     }
 }
 
-/// Compositeur : dessine chaque image (fond, vidéos, images, textes) sur le GPU avec Core Image.
+/// Compositeur : dessine chaque image (fond, vidéos, images, textes, effets, transitions) sur le GPU.
 /// Le même code sert à l'aperçu et à l'export : ce que l'on voit est ce que l'on exporte.
 final class RushCompositor: NSObject, AVVideoCompositing {
     private static let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
@@ -95,64 +96,172 @@ final class RushCompositor: NSObject, AVVideoCompositing {
 
     func cancelAllPendingVideoCompositionRequests() {}
 
-    // MARK: - Rendu
+    // MARK: - Rendu d'une image
 
     static func render(plan: RenderPlan, time: RTime, renderSize: CGSize, frame: (CMPersistentTrackID) -> CIImage?) -> CIImage {
         let canvas = CGRect(origin: .zero, size: renderSize)
-        let bg = plan.background
-        var output = CIImage(color: CIColor(red: bg.r, green: bg.g, blue: bg.b, alpha: 1)).cropped(to: canvas)
-
+        let frameIndex = Int(time.frameIndex(fps: plan.fps))
+        var output = CI.solid(plan.background.with(alpha: 1), canvas)
         let active = plan.layers.filter { !$0.isHidden && $0.start <= time && time < $0.end }
 
         // Fond flou : la vidéo principale agrandie et floutée derrière l'image.
-        if plan.blurBackground, let main = active.first(where: { $0.isMain }),
+        if plan.blurBackground, let main = active.last(where: { $0.isMain }),
            let source = sourceImage(for: main, time: time, renderSize: renderSize, frame: frame) {
-            let cropped = applyCrop(source, crop: main.crop)
-            let s = max(renderSize.width / cropped.extent.width, renderSize.height / cropped.extent.height)
-            let scaled = cropped.transformed(by: CGAffineTransform(scaleX: s, y: s))
+            let s = max(renderSize.width / source.extent.width, renderSize.height / source.extent.height)
+            let scaled = source.transformed(by: CGAffineTransform(scaleX: s, y: s))
             let centered = scaled.transformed(by: CGAffineTransform(
                 translationX: (renderSize.width - scaled.extent.width) / 2 - scaled.extent.origin.x,
                 y: (renderSize.height - scaled.extent.height) / 2 - scaled.extent.origin.y))
-            let blurred = centered.clampedToExtent()
+            output = centered.clampedToExtent()
                 .applyingGaussianBlur(sigma: Double(renderSize.height) * 0.035)
                 .cropped(to: canvas)
-            let dimmed = blurred.applyingFilter("CIColorControls", parameters: [kCIInputBrightnessKey: -0.08])
-            output = dimmed.composited(over: output)
+                .applyingFilter("CIColorControls", parameters: [kCIInputBrightnessKey: -0.08])
+                .composited(over: output)
         }
 
-        for layer in active {
-            guard let source = sourceImage(for: layer, time: time, renderSize: renderSize, frame: frame) else { continue }
-            let isText: Bool
-            if case .text = layer.content { isText = true } else { isText = false }
-            let cropped = isText ? source : applyCrop(source, crop: layer.crop)
-            let sourceSize = cropped.extent.size
-            guard sourceSize.width >= 1, sourceSize.height >= 1 else { continue }
-            let geometry = Geometry.layer(sourceSize: sourceSize, canvas: renderSize,
-                                          fit: isText ? .none : layer.fit, transform: layer.transform)
-            var placed = cropped.transformed(by: Geometry.coreImageTransform(
-                for: geometry, sourceSize: sourceSize, canvasHeight: renderSize.height))
-            if layer.opacity < 0.999 {
-                placed = placed.applyingFilter("CIColorMatrix", parameters: [
-                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: CGFloat(max(0, layer.opacity))),
-                ])
+        // Piste principale (avec transitions).
+        let mains = active.filter { $0.isMain }.sorted { $0.start < $1.start }
+        if mains.count >= 2, let incoming = mains.last, let transition = incoming.clip.transitionIn {
+            let outgoing = mains[mains.count - 2]
+            let from = (placedLayer(outgoing, time: time, renderSize: renderSize, frame: frame, frameIndex: frameIndex)?.composited(over: output)) ?? output
+            let to = (placedLayer(incoming, time: time, renderSize: renderSize, frame: frame, frameIndex: frameIndex)?.composited(over: output)) ?? output
+            let progress = Double((time - incoming.start).ticks) / Double(max(1, transition.duration.ticks))
+            output = TransitionCatalog.render(transition.type, from: from, to: to, progress: progress, extent: canvas, frame: frameIndex)
+        } else {
+            for layer in mains {
+                if let placed = placedLayer(layer, time: time, renderSize: renderSize, frame: frame, frameIndex: frameIndex) {
+                    output = blend(placed, over: output, mode: layer.clip.blendMode)
+                }
             }
-            output = placed.composited(over: output)
+        }
+
+        // Autres pistes, de bas en haut.
+        for layer in active where !layer.isMain {
+            if case .effect = layer.content {
+                output = applyEffectClip(layer, to: output, time: time, renderSize: renderSize, frameIndex: frameIndex)
+                continue
+            }
+            if let placed = placedLayer(layer, time: time, renderSize: renderSize, frame: frame, frameIndex: frameIndex) {
+                output = blend(placed, over: output, mode: layer.clip.blendMode)
+            }
         }
         return output.cropped(to: canvas)
     }
 
-    private static func sourceImage(for layer: LayerPlan, time: RTime, renderSize: CGSize,
-                                    frame: (CMPersistentTrackID) -> CIImage?) -> CIImage? {
+    static func blend(_ image: CIImage, over background: CIImage, mode: BlendMode) -> CIImage {
+        let filter: String?
+        switch mode {
+        case .normal: filter = nil
+        case .multiply: filter = "CIMultiplyBlendMode"
+        case .screen: filter = "CIScreenBlendMode"
+        case .overlay: filter = "CIOverlayBlendMode"
+        case .softLight: filter = "CISoftLightBlendMode"
+        case .darken: filter = "CIDarkenBlendMode"
+        case .lighten: filter = "CILightenBlendMode"
+        case .difference: filter = "CIDifferenceBlendMode"
+        }
+        guard let filter else { return image.composited(over: background) }
+        return image.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: background]).cropped(to: background.extent)
+    }
+
+    static func effectContext(for clip: Clip, local: RTime, renderSize: CGSize, frameIndex: Int) -> EffectContext {
+        var ctx = EffectContext(local: local.seconds, duration: clip.duration.seconds, frame: frameIndex, intensity: 1, params: [:], canvas: renderSize)
+        // Zone visée par un effet localisé : position et échelle du clip d'effet (animables).
+        let cx = 0.5 + clip.value(.positionX, at: local), cy = 0.5 + clip.value(.positionY, at: local)
+        let s = clip.value(.scale, at: local)
+        let w = 0.4 * s, h = 0.4 * s * Double(renderSize.width / max(1, renderSize.height))
+        ctx.region = CGRect(x: cx - w / 2, y: cy - h / 2, width: w, height: h)
+        return ctx
+    }
+
+    private static func applyEffectClip(_ layer: LayerPlan, to image: CIImage, time: RTime, renderSize: CGSize, frameIndex: Int) -> CIImage {
+        let clip = layer.clip
+        let local = time - clip.start
+        let ctx = effectContext(for: clip, local: local, renderSize: renderSize, frameIndex: frameIndex)
+        var result = EffectCatalog.apply(clip.effects, to: image, context: ctx)
+        // Mouvement de caméra appliqué à l'image entière.
+        let camera = EffectCatalog.camera(clip.effects, context: ctx)
+        if camera != .identity {
+            let e = image.extent
+            let t = CGAffineTransform(translationX: -e.midX, y: -e.midY)
+                .concatenating(CGAffineTransform(scaleX: camera.scale, y: camera.scale))
+                .concatenating(CGAffineTransform(rotationAngle: -camera.rotation * .pi / 180))
+                .concatenating(CGAffineTransform(translationX: e.midX + camera.dx * e.width, y: e.midY - camera.dy * e.height))
+            result = result.clampedToExtent().transformed(by: t).cropped(to: e)
+        }
+        if let filter = clip.filter { result = FilterCatalog.apply(filter, to: result, frame: frameIndex) }
+        result = ColorPipeline.apply(clip.adjust, to: result, frame: frameIndex)
+        return result.cropped(to: image.extent)
+    }
+
+    /// Calque prêt à composer : source traitée, placée dans le cadre (transparent ailleurs).
+    static func placedLayer(_ layer: LayerPlan, time: RTime, renderSize: CGSize,
+                            frame: (CMPersistentTrackID) -> CIImage?, frameIndex: Int) -> CIImage? {
+        let clip = layer.clip
+        let local = time - clip.start
+        guard var image = sourceImage(for: layer, time: time, renderSize: renderSize, frame: frame) else { return nil }
+        let isGraphic: Bool
+        switch layer.content {
+        case .text, .sticker: isGraphic = true
+        default: isGraphic = false
+        }
+        var ctx = effectContext(for: clip, local: local, renderSize: renderSize, frameIndex: frameIndex)
+        ctx.canvas = image.extent.size
+
+        // Traitements de l'image source.
+        if !isGraphic {
+            if let chroma = clip.chroma { image = ChromaKeyer.apply(chroma, to: image) }
+            image = ColorPipeline.apply(clip.adjust, to: image, frame: frameIndex)
+            if let filter = clip.filter { image = FilterCatalog.apply(filter, to: image, frame: frameIndex) }
+        }
+        if !clip.effects.isEmpty { image = EffectCatalog.apply(clip.effects, to: image, context: ctx) }
+        if !isGraphic {
+            if let mask = clip.mask { image = MaskRenderer.apply(mask, to: image) }
+            image = applyCrop(image, crop: clip.crop)
+        }
+        if !clip.style.isPlain { image = LayerStyler.apply(clip.style, to: image, canvas: renderSize) }
+
+        // Position (images clés + animations + mouvements de caméra).
+        let anim = AnimationCatalog.state(for: clip, local: local).combined(with: EffectCatalog.camera(clip.effects, context: ctx))
+        var transform = clip.transform
+        transform.positionX = clip.value(.positionX, at: local) + anim.dx
+        transform.positionY = clip.value(.positionY, at: local) + anim.dy
+        transform.scale = clip.value(.scale, at: local) * anim.scale
+        transform.rotation = clip.value(.rotation, at: local) + anim.rotation
+        let sourceSize = image.extent.size
+        guard sourceSize.width >= 1, sourceSize.height >= 1 else { return nil }
+        let fit: FitMode = isGraphic ? .none : clip.fit
+        let geometry = Geometry.layer(sourceSize: sourceSize, canvas: renderSize, fit: fit, transform: transform)
+        var placed = image.transformed(by: Geometry.coreImageTransform(for: geometry, sourceSize: sourceSize, canvasHeight: renderSize.height))
+        if anim.blur > 0.0005 {
+            placed = placed.applyingGaussianBlur(sigma: anim.blur * Double(renderSize.height))
+        }
+        let opacity = max(0, min(1, clip.value(.opacity, at: local) * anim.opacity))
+        if opacity < 0.999 {
+            placed = placed.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0, y: 0, z: 0, w: CGFloat(opacity))])
+        }
+        return placed.cropped(to: CGRect(origin: .zero, size: renderSize).insetBy(dx: -renderSize.width, dy: -renderSize.height))
+    }
+
+    static func sourceImage(for layer: LayerPlan, time: RTime, renderSize: CGSize,
+                            frame: (CMPersistentTrackID) -> CIImage?) -> CIImage? {
+        let clip = layer.clip
+        let local = time - clip.start
         switch layer.content {
         case .video(let trackID, let orientation):
             guard let image = frame(trackID) else { return nil }
             return normalize(image.oriented(orientation))
         case .image(let url, let animated):
-            let local = (time - layer.start + layer.sourceIn).seconds
-            return ImageSourceCache.shared.image(url: url, animated: animated, at: local)
+            let t = clip.sourceIn.seconds + local.seconds * clip.speed.rate
+            return ImageSourceCache.shared.image(url: url, animated: animated, at: t)
         case .text(let text):
-            guard let cg = TextRenderer.render(text, canvas: renderSize) else { return nil }
+            guard let cg = TextRenderer.render(text, canvas: renderSize, local: local.seconds, clipDuration: clip.duration.seconds) else { return nil }
             return CIImage(cgImage: cg)
+        case .sticker(let id, let color):
+            guard let cg = StickerCatalog.render(id, color: color, canvas: renderSize) else { return nil }
+            return CIImage(cgImage: cg)
+        case .effect:
+            return nil
         case .missing(let name):
             var placeholder = TextContent()
             placeholder.string = "Média introuvable\n\(name)"
@@ -164,11 +273,11 @@ final class RushCompositor: NSObject, AVVideoCompositing {
         }
     }
 
-    private static func normalize(_ image: CIImage) -> CIImage {
+    static func normalize(_ image: CIImage) -> CIImage {
         image.transformed(by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y))
     }
 
-    private static func applyCrop(_ image: CIImage, crop: CropRect) -> CIImage {
+    static func applyCrop(_ image: CIImage, crop: CropRect) -> CIImage {
         guard !crop.isEmpty else { return image }
         let e = image.extent
         let rect = CGRect(x: e.origin.x + e.width * crop.left,
@@ -189,5 +298,162 @@ extension CGImagePropertyOrientation {
         case 180, -180: self = .down
         default: self = .up
         }
+    }
+}
+
+/// Incrustation sur fond vert : table de couleurs qui rend transparente la couleur choisie.
+enum ChromaKeyer {
+    private final class Box { let data: Data; init(_ d: Data) { data = d } }
+    nonisolated(unsafe) private static let cache = NSCache<NSString, Box>()
+    static let size = 32
+
+    static func apply(_ key: ChromaKey, to image: CIImage) -> CIImage {
+        let id = "\(key.color.r)-\(key.color.g)-\(key.color.b)-\(key.tolerance)-\(key.softness)-\(key.spill)" as NSString
+        let data: Data
+        if let cached = cache.object(forKey: id) { data = cached.data } else { data = cube(key); cache.setObject(Box(data), forKey: id) }
+        return image.applyingFilter("CIColorCubeWithColorSpace", parameters: [
+            "inputCubeDimension": size, "inputCubeData": data, "inputColorSpace": CGColorSpace(name: CGColorSpace.sRGB)!,
+        ]).cropped(to: image.extent)
+    }
+
+    static func hueSat(_ r: Double, _ g: Double, _ b: Double) -> (h: Double, s: Double, v: Double) {
+        let mx = max(r, g, b), mn = min(r, g, b), d = mx - mn
+        var h = 0.0
+        if d > 0 {
+            if mx == r { h = ((g - b) / d).truncatingRemainder(dividingBy: 6) }
+            else if mx == g { h = (b - r) / d + 2 }
+            else { h = (r - g) / d + 4 }
+            h /= 6
+            if h < 0 { h += 1 }
+        }
+        return (h, mx == 0 ? 0 : d / mx, mx)
+    }
+
+    static func cube(_ key: ChromaKey) -> Data {
+        let n = size
+        let target = hueSat(key.color.r, key.color.g, key.color.b)
+        var values = [Float](repeating: 0, count: n * n * n * 4)
+        var i = 0
+        for bi in 0..<n {
+            let b = Double(bi) / Double(n - 1)
+            for gi in 0..<n {
+                let g = Double(gi) / Double(n - 1)
+                for ri in 0..<n {
+                    let r = Double(ri) / Double(n - 1)
+                    let hs = hueSat(r, g, b)
+                    var dh = abs(hs.h - target.h)
+                    dh = min(dh, 1 - dh)
+                    // Distance : teinte surtout, pondérée par la saturation (les gris ne sont jamais retirés).
+                    let distance = dh * 2 + max(0, 0.25 - hs.s) * 2 + max(0, 0.15 - hs.v) * 2
+                    let edge0 = key.tolerance, edge1 = key.tolerance + max(0.01, key.softness)
+                    var alpha = distance <= edge0 ? 0 : (distance >= edge1 ? 1 : (distance - edge0) / (edge1 - edge0))
+                    alpha = alpha * alpha * (3 - 2 * alpha)
+                    var (rr, gg, bb) = (r, g, b)
+                    // Débordement : réduit la couleur de fond dans les zones proches.
+                    if alpha < 1 && key.spill > 0 && distance < edge1 + 0.2 {
+                        let avg = (rr + gg + bb) / 3
+                        let amount = key.spill * (1 - alpha)
+                        rr += (avg - rr) * amount; gg += (avg - gg) * amount; bb += (avg - bb) * amount
+                    }
+                    values[i] = Float(rr * alpha); values[i + 1] = Float(gg * alpha); values[i + 2] = Float(bb * alpha); values[i + 3] = Float(alpha)
+                    i += 4
+                }
+            }
+        }
+        return values.withUnsafeBufferPointer { Data(buffer: $0) }
+    }
+}
+
+/// Masques (linéaire, miroir, cercle, rectangle) appliqués dans l'espace de la source.
+enum MaskRenderer {
+    static func maskImage(_ mask: Mask, extent e: CGRect) -> CIImage {
+        let cx = e.midX + CGFloat(mask.centerX) * e.width
+        let cy = e.midY - CGFloat(mask.centerY) * e.height
+        let w = max(1, CGFloat(mask.width) * e.width), h = max(1, CGFloat(mask.height) * e.height)
+        let feather = max(0.5, CGFloat(mask.feather) * min(e.width, e.height))
+        var image: CIImage
+        switch mask.shape {
+        case .cercle:
+            image = Tutorial.ellipseMask(CGRect(x: cx - w / 2, y: cy - h / 2, width: w, height: h), in: e, feather: min(0.9, feather / max(w, h)))
+        case .rectangle:
+            image = Frames.shapeMask(CGRect(x: cx - w / 2, y: cy - h / 2, width: w, height: h), in: e,
+                                     radius: CGFloat(mask.cornerRadius) * min(w, h), ellipse: false)
+                .clampedToExtent().applyingGaussianBlur(sigma: Double(feather) / 2).cropped(to: e)
+        case .lineaire:
+            image = CIFilter(name: "CILinearGradient", parameters: [
+                "inputPoint0": CIVector(x: cx, y: cy - feather), "inputPoint1": CIVector(x: cx, y: cy + feather),
+                "inputColor0": CIColor(red: 1, green: 1, blue: 1), "inputColor1": CIColor(red: 0, green: 0, blue: 0),
+            ])!.outputImage!.cropped(to: e.insetBy(dx: -e.width, dy: -e.height))
+        case .miroir:
+            let low = CIFilter(name: "CILinearGradient", parameters: [
+                "inputPoint0": CIVector(x: cx, y: cy - h / 2 - feather), "inputPoint1": CIVector(x: cx, y: cy - h / 2 + feather),
+                "inputColor0": CIColor(red: 0, green: 0, blue: 0), "inputColor1": CIColor(red: 1, green: 1, blue: 1),
+            ])!.outputImage!
+            let high = CIFilter(name: "CILinearGradient", parameters: [
+                "inputPoint0": CIVector(x: cx, y: cy + h / 2 - feather), "inputPoint1": CIVector(x: cx, y: cy + h / 2 + feather),
+                "inputColor0": CIColor(red: 1, green: 1, blue: 1), "inputColor1": CIColor(red: 0, green: 0, blue: 0),
+            ])!.outputImage!
+            image = low.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: high]).cropped(to: e.insetBy(dx: -e.width, dy: -e.height))
+        }
+        if mask.rotation != 0 {
+            image = image.transformed(by: CGAffineTransform(translationX: -cx, y: -cy)
+                .concatenating(CGAffineTransform(rotationAngle: -CGFloat(mask.rotation) * .pi / 180))
+                .concatenating(CGAffineTransform(translationX: cx, y: cy)))
+        }
+        image = image.cropped(to: e)
+        if mask.invert { image = image.applyingFilter("CIColorInvert").cropped(to: e) }
+        return image
+    }
+
+    static func apply(_ mask: Mask, to image: CIImage) -> CIImage {
+        image.applyingFilter("CIBlendWithMask", parameters: [
+            kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: maskImage(mask, extent: image.extent),
+        ]).cropped(to: image.extent)
+    }
+}
+
+/// Coins arrondis, bordure et ombre d'un calque (incrustation).
+enum LayerStyler {
+    static func apply(_ style: LayerStyle, to image: CIImage, canvas: CGSize) -> CIImage {
+        let e = image.extent
+        var result = image
+        if style.cornerRadius > 0 {
+            let mask = Frames.shapeMask(e, in: e, radius: CGFloat(style.cornerRadius) * min(e.width, e.height), ellipse: false)
+            result = result.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+        }
+        var bounds = e
+        if style.borderWidth > 0 {
+            let w = CGFloat(style.borderWidth) * min(e.width, e.height)
+            bounds = e.insetBy(dx: -w, dy: -w)
+            let radius = style.cornerRadius > 0 ? CGFloat(style.cornerRadius) * min(e.width, e.height) + w : 0
+            let border = CI.solid(style.borderColor, bounds).applyingFilter("CIBlendWithMask", parameters: [
+                kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: Frames.shapeMask(bounds, in: bounds, radius: radius, ellipse: false),
+            ])
+            result = result.composited(over: border)
+        }
+        if style.shadow > 0 {
+            let offset = min(e.width, e.height) * 0.02
+            let shadow = result.applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: 0, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0, z: 0, w: 0),
+                "inputBVector": CIVector(x: 0, y: 0, z: 0, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: CGFloat(0.6 * style.shadow)),
+            ]).applyingGaussianBlur(sigma: Double(min(e.width, e.height)) * 0.03 * style.shadow)
+                .transformed(by: CGAffineTransform(translationX: offset, y: -offset))
+            result = result.composited(over: shadow)
+            bounds = bounds.union(shadow.extent.intersection(bounds.insetBy(dx: -offset * 4, dy: -offset * 4)))
+        }
+        return CompositorTools.normalized(result.cropped(to: bounds))
+    }
+}
+
+enum CompositorTools {
+    static func normalized(_ image: CIImage) -> CIImage {
+        image.transformed(by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y))
+    }
+}
+
+/// Traitement audio supplémentaire (gain au-delà de 0 dB, réduction de bruit…) : voir lot V1-C.
+enum AudioProcessing {
+    static func attach(to params: AVMutableAudioMixInputParameters, segments: [AudioSegment]) {
+        AudioTap.attach(to: params, segments: segments)
     }
 }

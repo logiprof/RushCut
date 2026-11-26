@@ -303,30 +303,203 @@ extension AudioSettings {
     }
 }
 
+struct SpeedPoint: Codable, Hashable, Sendable {
+    /// Position dans le clip (0–1) et vitesse à cet endroit.
+    var position: Double
+    var rate: Double
+}
+
 struct SpeedCurve: Codable, Hashable, Sendable {
+    /// Vitesse constante (0,1× à 100×).
     var rate: Double = 1
+    /// Conserver la hauteur du son quand la vitesse change.
+    var preservePitch: Bool = true
+    /// Courbe de vitesse (lot V2) ; vide = vitesse constante.
+    var curve: [SpeedPoint] = []
+    var curveName: String? = nil
+}
+
+extension SpeedCurve {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        rate = c.value(.rate, 1)
+        preservePitch = c.value(.preservePitch, true)
+        curve = c.value(.curve, [])
+        curveName = c.value(.curveName, nil)
+    }
 }
 
 struct EffectInstance: Codable, Hashable, Identifiable, Sendable {
     var id: UUID = UUID()
+    /// Identifiant dans le catalogue d'effets.
     var type: String = ""
     var params: [String: Double] = [:]
+    /// Intensité 0–1.
+    var intensity: Double = 1
+}
+
+extension EffectInstance {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = c.value(.id, UUID())
+        type = c.value(.type, "")
+        params = c.value(.params, [:])
+        intensity = c.value(.intensity, 1)
+    }
 }
 
 struct Transition: Codable, Hashable, Sendable {
+    /// Identifiant dans le catalogue de transitions.
     var type: String = "fondu"
     var duration: RTime = RTime(seconds: 0.5)
 }
 
-struct Keyframe: Codable, Hashable, Sendable {
-    var time: RTime = .zero
-    var value: Double = 0
-    var interpolation: String = "lineaire"
+enum Interpolation: String, Codable, CaseIterable, Sendable {
+    case lineaire, douce, entree, sortie, maintien
+
+    var label: String {
+        switch self {
+        case .lineaire: return "Linéaire"
+        case .douce: return "Douce"
+        case .entree: return "Entrée douce"
+        case .sortie: return "Sortie douce"
+        case .maintien: return "Maintien"
+        }
+    }
 }
 
+struct Keyframe: Codable, Hashable, Sendable {
+    /// Temps depuis le début du clip.
+    var time: RTime = .zero
+    var value: Double = 0
+    var interpolation: Interpolation = .douce
+}
+
+extension Keyframe {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        time = c.value(.time, .zero)
+        value = c.value(.value, 0)
+        interpolation = c.value(.interpolation, .douce)
+    }
+}
+
+enum MaskShape: String, Codable, CaseIterable, Sendable {
+    case lineaire, miroir, cercle, rectangle
+
+    var label: String {
+        switch self {
+        case .lineaire: return "Linéaire"
+        case .miroir: return "Miroir"
+        case .cercle: return "Cercle"
+        case .rectangle: return "Rectangle"
+        }
+    }
+}
+
+/// Masque, en fractions de la taille de la source (centre 0 = milieu).
 struct Mask: Codable, Hashable, Sendable {
-    var type: String = "rectangle"
-    var params: [String: Double] = [:]
+    var shape: MaskShape = .cercle
+    var centerX: Double = 0
+    var centerY: Double = 0
+    var width: Double = 0.6
+    var height: Double = 0.6
+    var rotation: Double = 0
+    var feather: Double = 0.05
+    var cornerRadius: Double = 0.1
+    var invert: Bool = false
+}
+
+extension Mask {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = Mask()
+        shape = c.value(.shape, d.shape)
+        centerX = c.value(.centerX, d.centerX)
+        centerY = c.value(.centerY, d.centerY)
+        width = c.value(.width, d.width)
+        height = c.value(.height, d.height)
+        rotation = c.value(.rotation, d.rotation)
+        feather = c.value(.feather, d.feather)
+        cornerRadius = c.value(.cornerRadius, d.cornerRadius)
+        invert = c.value(.invert, d.invert)
+    }
+}
+
+/// Réglages de couleur, chacun de −1 à 1 (0 = neutre), sauf netteté, vignettage et grain (0 à 1).
+struct ColorAdjust: Codable, Hashable, Sendable {
+    var exposure: Double = 0
+    var brightness: Double = 0
+    var contrast: Double = 0
+    var saturation: Double = 0
+    var vibrance: Double = 0
+    var temperature: Double = 0
+    var tint: Double = 0
+    var highlights: Double = 0
+    var shadows: Double = 0
+    var sharpness: Double = 0
+    var vignette: Double = 0
+    var grain: Double = 0
+
+    var isNeutral: Bool { self == ColorAdjust() }
+}
+
+extension ColorAdjust {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        exposure = c.value(.exposure, 0)
+        brightness = c.value(.brightness, 0)
+        contrast = c.value(.contrast, 0)
+        saturation = c.value(.saturation, 0)
+        vibrance = c.value(.vibrance, 0)
+        temperature = c.value(.temperature, 0)
+        tint = c.value(.tint, 0)
+        highlights = c.value(.highlights, 0)
+        shadows = c.value(.shadows, 0)
+        sharpness = c.value(.sharpness, 0)
+        vignette = c.value(.vignette, 0)
+        grain = c.value(.grain, 0)
+    }
+}
+
+struct FilterRef: Codable, Hashable, Sendable {
+    var id: String
+    var intensity: Double = 1
+}
+
+struct ChromaKey: Codable, Hashable, Sendable {
+    var color: RGBA = RGBA(r: 0, g: 0.8, b: 0.2)
+    /// Écart de teinte accepté (0–1).
+    var tolerance: Double = 0.25
+    var softness: Double = 0.1
+    /// Suppression du débordement de couleur (0–1).
+    var spill: Double = 0.5
+}
+
+/// Habillage d'un calque (incrustation) : coins arrondis, bordure, ombre.
+struct LayerStyle: Codable, Hashable, Sendable {
+    /// Rayon des coins en fraction du plus petit côté.
+    var cornerRadius: Double = 0
+    /// Épaisseur de la bordure en fraction du plus petit côté du cadre.
+    var borderWidth: Double = 0
+    var borderColor: RGBA = .white
+    /// Ombre portée (0–1).
+    var shadow: Double = 0
+
+    var isPlain: Bool { cornerRadius == 0 && borderWidth == 0 && shadow == 0 }
+}
+
+/// Animation d'entrée, de sortie ou en boucle (identifiant du catalogue + durée).
+struct ClipAnimation: Codable, Hashable, Sendable {
+    var id: String
+    var duration: RTime = RTime(seconds: 0.6)
+}
+
+/// Mot d'un sous-titre, avec son instant de prononciation (depuis le début du clip).
+struct WordTiming: Codable, Hashable, Sendable {
+    var text: String
+    var start: RTime
+    var end: RTime
 }
 
 enum TextAlignmentMode: String, Codable, CaseIterable, Sendable {
@@ -366,6 +539,15 @@ struct TextContent: Codable, Hashable, Sendable {
     var backgroundColor: RGBA = RGBA(r: 0, g: 0, b: 0, a: 0.7)
     var backgroundPadding: Double = 0.3
     var backgroundCornerRadius: Double = 0.2
+    /// Animation du texte (machine à écrire, mot par mot, karaoké…), identifiant du catalogue.
+    var animation: String? = nil
+    /// Durée d'apparition progressive, en secondes.
+    var animationDuration: Double = 1
+    var highlightColor: RGBA = RGBA(r: 1, g: 0.85, b: 0.1)
+    /// Mots minutés (sous-titres automatiques).
+    var words: [WordTiming] = []
+    /// Vrai pour les sous-titres (piste et liste dédiées).
+    var isSubtitle: Bool = false
 }
 
 extension TextContent {
@@ -392,6 +574,11 @@ extension TextContent {
         backgroundColor = c.value(.backgroundColor, d.backgroundColor)
         backgroundPadding = c.value(.backgroundPadding, d.backgroundPadding)
         backgroundCornerRadius = c.value(.backgroundCornerRadius, d.backgroundCornerRadius)
+        animation = c.value(.animation, nil)
+        animationDuration = c.value(.animationDuration, d.animationDuration)
+        highlightColor = c.value(.highlightColor, d.highlightColor)
+        words = c.value(.words, [])
+        isSubtitle = c.value(.isSubtitle, false)
     }
 }
 
@@ -418,8 +605,21 @@ struct Clip: Codable, Hashable, Identifiable, Sendable {
     var text: TextContent? = nil
     var mask: Mask? = nil
     var linkedClipIDs: [UUID] = []
+    var adjust: ColorAdjust = ColorAdjust()
+    var filter: FilterRef? = nil
+    var chroma: ChromaKey? = nil
+    var style: LayerStyle = LayerStyle()
+    var animIn: ClipAnimation? = nil
+    var animOut: ClipAnimation? = nil
+    var animLoop: ClipAnimation? = nil
+    /// Autocollant dessiné (identifiant du catalogue).
+    var sticker: String? = nil
+    var stickerColor: RGBA = RGBA(r: 1, g: 0.85, b: 0.1)
 
     var end: RTime { start + duration }
+    var isSticker: Bool { sticker != nil }
+    /// Clip sans média ni texte ni autocollant : effet appliqué aux pistes du dessous.
+    var isEffectOnly: Bool { mediaID == nil && text == nil && sticker == nil }
     var isText: Bool { text != nil }
 
     func contains(_ time: RTime) -> Bool { start <= time && time < end }
@@ -447,6 +647,15 @@ extension Clip {
         text = c.value(.text, nil)
         mask = c.value(.mask, nil)
         linkedClipIDs = c.value(.linkedClipIDs, [])
+        adjust = c.value(.adjust, ColorAdjust())
+        filter = c.value(.filter, nil)
+        chroma = c.value(.chroma, nil)
+        style = c.value(.style, LayerStyle())
+        animIn = c.value(.animIn, nil)
+        animOut = c.value(.animOut, nil)
+        animLoop = c.value(.animLoop, nil)
+        sticker = c.value(.sticker, nil)
+        stickerColor = c.value(.stickerColor, RGBA(r: 1, g: 0.85, b: 0.1))
     }
 }
 

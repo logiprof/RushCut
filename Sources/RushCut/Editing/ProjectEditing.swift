@@ -249,7 +249,9 @@ extension Project {
     func availableSourceDuration(for clip: Clip) -> RTime? {
         guard let m = media(clip.mediaID) else { return nil }
         switch m.kind {
-        case .video, .audio: return max(.zero, m.duration - clip.sourceIn)
+        case .video, .audio:
+            let remaining = max(.zero, m.duration - clip.sourceIn)
+            return RTime(ticks: Int64(Double(remaining.ticks) / max(0.01, clip.speed.rate)))
         case .image: return nil
         }
     }
@@ -299,8 +301,12 @@ extension Project {
                 right.id = rightID
                 right.start = t
                 right.duration = c.end - t
-                if c.mediaID != nil { right.sourceIn = c.sourceIn + offset }
+                if c.mediaID != nil { right.sourceIn = c.sourceIn + offset * max(0.01, c.speed.rate) }
                 right.audio.fadeIn = .zero
+                right.shiftKeyframes(by: offset)
+                right.transitionIn = nil
+                right.animIn = nil
+                left.animOut = nil
                 right.linkedClipIDs = c.linkedClipIDs.compactMap { rightIDs[$0] }
                 left.linkedClipIDs = c.linkedClipIDs.filter { rightIDs[$0] != nil || clip($0) != nil }
                 clampFades(&left)
@@ -327,16 +333,19 @@ extension Project {
         switch edge {
         case .start:
             var lower: RTime = .zero
-            if hasFiniteSource(c) { lower = max(lower, c.start - c.sourceIn) }
+            if hasFiniteSource(c) {
+                lower = max(lower, c.start - RTime(ticks: Int64(Double(c.sourceIn.ticks) / max(0.01, c.speed.rate))))
+            }
             if !track.isMain, let prev = others.filter({ $0.end <= c.start }).map(\.end).max() {
                 lower = max(lower, prev)
             }
             let upper = c.end - minimum
             let newStart = min(max(t, lower), upper)
             let delta = newStart - c.start
-            if c.mediaID != nil { c.sourceIn = max(.zero, c.sourceIn + delta) }
+            if c.mediaID != nil { c.sourceIn = max(.zero, c.sourceIn + delta * max(0.01, c.speed.rate)) }
             c.duration = c.end - newStart
             c.start = newStart
+            c.shiftKeyframes(by: delta)
         case .end:
             var upper = RTime(ticks: Int64.max / 4)
             if let available = availableSourceDuration(for: c) { upper = c.start + available }
@@ -519,6 +528,24 @@ extension Project {
         return created
     }
 
+    // MARK: - Vitesse
+
+    /// Change la vitesse d'un clip : la durée s'adapte pour garder le même passage de la source.
+    mutating func setSpeed(_ id: UUID, rate: Double) {
+        let fps = settings.frameRate
+        updateClip(id) { c in
+            let newRate = min(100, max(0.1, rate))
+            let oldRate = max(0.01, c.speed.rate)
+            let source = c.sourceLength
+            c.speed.rate = newRate
+            c.duration = max(RTime.frame(fps: fps), RTime(ticks: Int64(Double(source.ticks) / newRate)).snapped(fps: fps))
+            // Les images clés gardent leur place dans la source.
+            for (key, list) in c.keyframes {
+                c.keyframes[key] = list.map { var k = $0; k.time = RTime(ticks: Int64(Double(k.time.ticks) * oldRate / newRate)); return k }
+            }
+        }
+    }
+
     // MARK: - Marqueurs
 
     @discardableResult
@@ -571,7 +598,19 @@ extension Project {
         guard let mi = mainTrackIndex else { return }
         var clips = ordered
         var cursor = RTime.zero
+        let minimum = RTime.frame(fps: settings.frameRate)
         for i in clips.indices {
+            // Transition : le clip commence avant la fin du précédent (chevauchement).
+            var overlap = RTime.zero
+            if i == 0 {
+                clips[i].transitionIn = nil
+            } else if var t = clips[i].transitionIn {
+                let limit = RTime(ticks: min(clips[i - 1].duration.ticks, clips[i].duration.ticks) / 2)
+                t.duration = max(minimum, min(t.duration, limit)).snapped(fps: settings.frameRate)
+                clips[i].transitionIn = t
+                overlap = t.duration
+            }
+            cursor = max(.zero, cursor - overlap)
             if let original = originalStarts[clips[i].id] {
                 let delta = cursor - original
                 if delta != .zero {
