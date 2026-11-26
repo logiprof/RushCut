@@ -239,10 +239,10 @@ final class Exporter: @unchecked Sendable {
             }
         }
 
-        lock.lock()
-        self.reader = reader
-        let alreadyCancelled = cancelled
-        lock.unlock()
+        let alreadyCancelled = lock.withLock { () -> Bool in
+            self.reader = reader
+            return cancelled
+        }
         if alreadyCancelled { throw CancellationError() }
 
         guard reader.startReading() else {
@@ -295,26 +295,27 @@ final class Exporter: @unchecked Sendable {
 
     private func pump(input: AVAssetWriterInput, output: AVAssetReaderOutput, queue: DispatchQueue,
                       onSample: ((CMTime) -> Void)?) async {
+        final class State: @unchecked Sendable { var finished = false }
+        let state = State()
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            var finished = false
             input.requestMediaDataWhenReady(on: queue) { [self] in
-                while input.isReadyForMoreMediaData && !finished {
+                while input.isReadyForMoreMediaData && !state.finished {
                     if self.isCancelled {
-                        finished = true
+                        state.finished = true
                         continuation.resume()
                         return
                     }
                     if let sample = output.copyNextSampleBuffer() {
                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
                         if !input.append(sample) {
-                            finished = true
+                            state.finished = true
                             input.markAsFinished()
                             continuation.resume()
                             return
                         }
                         onSample?(time)
                     } else {
-                        finished = true
+                        state.finished = true
                         input.markAsFinished()
                         continuation.resume()
                         return

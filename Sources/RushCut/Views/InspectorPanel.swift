@@ -204,16 +204,33 @@ struct CropInspector: View {
     let clip: Clip
     let source: CGSize
 
+    private struct AspectChoice: Identifiable {
+        let label: String
+        let ratio: Double
+        var id: String { label }
+    }
+
+    private static let choices: [AspectChoice] = [
+        AspectChoice(label: "Libre", ratio: 0),
+        AspectChoice(label: "16:9", ratio: 16.0 / 9.0),
+        AspectChoice(label: "9:16", ratio: 9.0 / 16.0),
+        AspectChoice(label: "1:1", ratio: 1),
+        AspectChoice(label: "4:5", ratio: 0.8),
+    ]
+
+    private func applyAspect(_ ratio: Double) {
+        let size = source
+        model.updateClip(clip.id, "Recadrage") { c in
+            c.crop = ratio == 0 ? CropRect() : Geometry.crop(forAspect: ratio, source: size)
+        }
+    }
+
     var body: some View {
         InspectorSection(title: "Recadrage") {
             HStack {
-                ForEach([("Libre", 0.0), ("16:9", 16.0 / 9), ("9:16", 9.0 / 16), ("1:1", 1.0), ("4:5", 4.0 / 5)], id: \.0) { item in
-                    Button(item.0) {
-                        model.updateClip(clip.id, "Recadrage") { c in
-                            c.crop = item.1 == 0 ? CropRect() : Geometry.crop(forAspect: item.1, source: source)
-                        }
-                    }
-                    .controlSize(.small)
+                ForEach(Self.choices) { choice in
+                    Button(choice.label) { applyAspect(choice.ratio) }
+                        .controlSize(.small)
                 }
             }
             SliderField(title: "Gauche", value: clip.crop.left * 100, range: 0...45, unit: "%") { v in

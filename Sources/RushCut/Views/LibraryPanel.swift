@@ -135,22 +135,23 @@ struct LibraryPanel: View {
 
 /// Lit les fichiers glissés depuis le Finder.
 func loadFileURLs(_ providers: [NSItemProvider], completion: @escaping @MainActor ([URL]) -> Void) {
+    final class Collector: @unchecked Sendable {
+        private let lock = NSLock()
+        private var items: [URL] = []
+        func add(_ url: URL) { lock.withLock { items.append(url) } }
+        var urls: [URL] { lock.withLock { items } }
+    }
     let group = DispatchGroup()
-    let lock = NSLock()
-    var urls: [URL] = []
+    let collector = Collector()
     for provider in providers where provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
         group.enter()
         _ = provider.loadObject(ofClass: URL.self) { url, _ in
-            if let url {
-                lock.lock()
-                urls.append(url)
-                lock.unlock()
-            }
+            if let url { collector.add(url) }
             group.leave()
         }
     }
     group.notify(queue: .main) {
-        MainActor.assumeIsolated { completion(urls) }
+        MainActor.assumeIsolated { completion(collector.urls) }
     }
 }
 
