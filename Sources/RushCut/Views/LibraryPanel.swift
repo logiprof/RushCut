@@ -30,6 +30,7 @@ struct LibraryPanel: View {
 
             switch model.libraryTab {
             case .media: mediaTab
+            case .audio: AudioLibrary(model: model)
             case .text: TextStylesLibrary(model: model)
             case .stickers: StickersLibrary(model: model)
             case .effects: EffectsLibrary(model: model)
@@ -105,6 +106,9 @@ struct LibraryPanel: View {
                                         Button("Afficher dans le Finder") {
                                             NSWorkspace.shared.activateFileViewerSelecting([media.url])
                                         }
+                                    }
+                                    if media.kind == .video && media.hasAudio && !library.missing.contains(media.id) {
+                                        Button("Extraire le son (.m4a)") { model.extractAudio(mediaID: media.id) }
                                     }
                                     Divider()
                                     Button("Retirer de la bibliothèque") { model.removeMedia(media.id) }

@@ -284,12 +284,23 @@ struct AudioSettings: Codable, Hashable, Sendable {
     var fadeOut: RTime = .zero
     /// Vrai quand le son a été détaché vers une piste audio.
     var isMuted: Bool = false
+    /// Réduction de bruit (0 = désactivée, 1 = forte).
+    var denoise: Double = 0
+    /// Atténuation automatique (dB, négatif) quand un autre son joue en même temps (0 = désactivée).
+    var duckDB: Double = 0
+    /// Effet de voix (lot V2), identifiant dans le catalogue.
+    var voiceEffect: String? = nil
 
     static let silenceDB: Double = -60
 
     var linearGain: Float {
         if isMuted || volumeDB <= AudioSettings.silenceDB { return 0 }
         return Float(min(1, pow(10, volumeDB / 20)))
+    }
+
+    /// Gain au-delà de 0 dB (appliqué par le traitement audio).
+    static func extraGain(db: Double) -> Float {
+        db > 0 ? Float(pow(10, min(20, db) / 20)) : 1
     }
 }
 
@@ -300,6 +311,9 @@ extension AudioSettings {
         fadeIn = c.value(.fadeIn, .zero)
         fadeOut = c.value(.fadeOut, .zero)
         isMuted = c.value(.isMuted, false)
+        denoise = c.value(.denoise, 0)
+        duckDB = c.value(.duckDB, 0)
+        voiceEffect = c.value(.voiceEffect, nil)
     }
 }
 

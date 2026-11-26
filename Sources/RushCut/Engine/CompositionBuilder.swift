@@ -24,6 +24,8 @@ struct AudioSegment {
     /// Fondus effectifs (y compris le fondu croisé d'une transition).
     var fadeIn: RTime
     var fadeOut: RTime
+    /// Moments où un autre son joue (pour l'atténuation automatique).
+    var duckRanges: [(start: RTime, end: RTime)] = []
 }
 
 enum CompositionBuilder {
@@ -178,6 +180,7 @@ enum CompositionBuilder {
             RushInstruction(timeRange: CMTimeRange(start: .zero, duration: duration.cmTime), trackIDs: videoTrackIDs, plan: plan),
         ]
 
+        computeDucking(&audioGroups)
         var parameters: [AVMutableAudioMixInputParameters] = []
         for (track, segments) in audioGroups where !segments.isEmpty {
             let p = AVMutableAudioMixInputParameters(track: track)
@@ -207,6 +210,9 @@ enum CompositionBuilder {
         let local = time - clip.start
         let db = clip.value(.volume, at: local)
         var g: Double = db <= AudioSettings.silenceDB ? 0 : min(1, pow(10, db / 20))
+        if clip.audio.duckDB < 0, !segment.duckRanges.isEmpty {
+            g *= duckFactor(segment, at: time)
+        }
         let length = segment.end - segment.start
         if segment.fadeIn > .zero, local < segment.fadeIn {
             g *= Double(max(0, local.ticks)) / Double(max(1, segment.fadeIn.ticks))
@@ -218,11 +224,42 @@ enum CompositionBuilder {
         return Float(max(0, min(1, g)))
     }
 
+    /// Atténuation (0–1) à un instant, avec des rampes de 0,3 s autour des moments où un autre son joue.
+    static func duckFactor(_ segment: AudioSegment, at time: RTime) -> Double {
+        let ramp = 0.3
+        let t = time.seconds
+        var amount = 0.0
+        for r in segment.duckRanges {
+            let a = r.start.seconds, b = r.end.seconds
+            let v: Double
+            if t >= a && t <= b { v = 1 }
+            else if t < a { v = max(0, 1 - (a - t) / ramp) }
+            else { v = max(0, 1 - (t - b) / ramp) }
+            amount = max(amount, v)
+        }
+        let floor = pow(10, segment.clip.audio.duckDB / 20)
+        return 1 - amount * (1 - floor)
+    }
+
+    /// Pour chaque morceau à atténuer, repère les moments où un autre son (non atténué) joue.
+    static func computeDucking(_ groups: inout [(AVMutableCompositionTrack, [AudioSegment])]) {
+        let others: [(RTime, RTime)] = groups.flatMap { $0.1 }.filter { $0.clip.audio.duckDB >= 0 }.map { ($0.start, $0.end) }
+        guard !others.isEmpty else { return }
+        for g in groups.indices {
+            for s in groups[g].1.indices where groups[g].1[s].clip.audio.duckDB < 0 {
+                let seg = groups[g].1[s]
+                groups[g].1[s].duckRanges = others
+                    .filter { $0.1 > seg.start && $0.0 < seg.end }
+                    .map { (start: max($0.0, seg.start), end: min($0.1, seg.end)) }
+            }
+        }
+    }
+
     /// Enveloppe de volume d'un morceau : rampes successives (dans l'ordre chronologique).
     static func applyVolume(_ params: AVMutableAudioMixInputParameters, segment: AudioSegment) {
         let length = segment.end - segment.start
         guard length > .zero else { return }
-        let simple = !segment.clip.hasKeyframes(.volume)
+        let simple = !segment.clip.hasKeyframes(.volume) && segment.duckRanges.isEmpty
         if simple && segment.fadeIn == .zero && segment.fadeOut == .zero {
             params.setVolume(gain(segment, at: segment.start), at: segment.start.cmTime)
             return

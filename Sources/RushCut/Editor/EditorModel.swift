@@ -4,11 +4,12 @@ import AVFoundation
 import UniformTypeIdentifiers
 
 enum LibraryTab: String, CaseIterable, Identifiable {
-    case media, text, stickers, effects, transitions, filters
+    case media, audio, text, stickers, effects, transitions, filters
     var id: String { rawValue }
     var label: String {
         switch self {
         case .media: return "Médias"
+        case .audio: return "Audio"
         case .text: return "Texte"
         case .stickers: return "Autocollants"
         case .effects: return "Effets"
@@ -19,6 +20,7 @@ enum LibraryTab: String, CaseIterable, Identifiable {
     var icon: String {
         switch self {
         case .media: return "photo.on.rectangle"
+        case .audio: return "music.note"
         case .text: return "textformat"
         case .stickers: return "face.smiling"
         case .effects: return "sparkles"

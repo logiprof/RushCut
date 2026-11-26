@@ -22,6 +22,10 @@
 	<string>__VERSION__</string>
 	<key>CFBundleVersion</key>
 	<string>__BUILD__</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>RushCut utilise le micro pour enregistrer vos voix off.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>RushCut utilise la caméra pour enregistrer des séquences depuis la webcam.</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
 	<key>LSApplicationCategoryType</key>

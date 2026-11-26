@@ -222,8 +222,15 @@ struct ClipInspector: View {
 
     @ViewBuilder private var audioTab: some View {
         InspectorSection(title: "Audio") {
-            KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .volume, range: -60...0, unit: "dB", fractionDigits: 1)
+            KeyframeSlider(model: model, playback: model.playback, clip: clip, prop: .volume, range: -60...20, unit: "dB", fractionDigits: 1)
             KeyframeNavigator(model: model, playback: model.playback, clip: clip, props: [.volume])
+            HStack {
+                Text("Normaliser").font(.caption)
+                Button("Réseaux (−14 LUFS)") { model.normalizeLoudness(Array(model.selection), target: -14) }
+                Button("TV (−23)") { model.normalizeLoudness(Array(model.selection), target: -23) }
+            }
+            .controlSize(.small)
+            .help("Mesure la sonie du son et règle le volume pour atteindre la cible.")
             let maxFade = max(0.1, min(10, clip.duration.seconds / 2))
             SliderField(title: "Fondu d'ouverture", value: clip.audio.fadeIn.seconds, range: 0...maxFade, unit: "s", fractionDigits: 2) { v in
                 update("Fondu d'ouverture", "fadeIn") { $0.audio.fadeIn = RTime(seconds: v).snapped(fps: model.fps) }
@@ -233,6 +240,24 @@ struct ClipInspector: View {
             }
             if !onAudioTrack && media?.kind == .video {
                 Button("Détacher l'audio") { model.detachAudio() }
+            }
+        }
+        InspectorSection(title: "Nettoyage et mixage") {
+            SliderField(title: "Réduction de bruit", value: clip.audio.denoise * 100, range: 0...100, unit: "%") { v in
+                update("Réduction de bruit", "denoise") { $0.audio.denoise = v / 100 }
+            }
+            Text("Atténue le souffle, le ronflement et les bruits de fond entre les phrases.")
+                .font(.caption).foregroundStyle(.secondary)
+            Divider()
+            Toggle("Baisser sous les autres sons (ducking)", isOn: Binding(get: { clip.audio.duckDB < 0 }, set: { v in
+                update("Atténuation automatique", "duck") { $0.audio.duckDB = v ? -12 : 0 }
+            }))
+            if clip.audio.duckDB < 0 {
+                SliderField(title: "Atténuation", value: clip.audio.duckDB, range: -30...(-3), unit: "dB") { v in
+                    update("Atténuation automatique", "duckA") { $0.audio.duckDB = v }
+                }
+                Text("À utiliser sur la musique : elle baisse toute seule quand une voix ou un autre son joue.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
         }
     }
