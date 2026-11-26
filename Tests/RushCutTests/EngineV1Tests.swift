@@ -215,7 +215,7 @@ struct CatalogTests {
         #expect(k?.highlight?.location == 13, "Troisième mot (« le ») à 2,1 s sur 4 mots / 4 s")
         text.string = "1500 vues"
         text.animation = "texte-compteur"
-        #expect(TextReveal.compute(text, local: 0.5, clipDuration: 4)?.displayString == "750 vues")
+        #expect(TextReveal.compute(text, local: 1, clipDuration: 4)?.displayString == "750 vues", "Moitié de l’animation de 2 s")
     }
 }
 
