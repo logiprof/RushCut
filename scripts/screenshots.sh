@@ -42,9 +42,14 @@ date -u +%T > "$OUT/1-accueil-info.txt"
 open -n "$APP" --args --capture "$OUT/1-accueil-app.png"
 capture 1-accueil
 
+# Le processus précédent a été arrêté de force : on retire son verrou de session.
+rm -f "$HOME/Library/Application Support/RushCut/session.json"
 date -u +%T > "$OUT/2-montage-info.txt"
 open -n -a "$APP" "$HOME/Movies/RushCut/Démo RushCut.rushcut" --args --capture "$OUT/2-montage-app.png"
 capture 2-montage
+
+# Export réel depuis l'application n'est pas automatisable ici ; on vérifie l'aperçu à 5 s via une 3e capture.
+rm -f "$HOME/Library/Application Support/RushCut/session.json"
 
 log show --last 5m --predicate 'process == "tccd" AND eventMessage CONTAINS "RushCut"' --style compact 2>/dev/null | tail -30 > "$OUT/tcc.txt" || true
 cp "$HOME/Library/Logs/RushCut/rushcut.log" "$OUT/journal.log" 2>/dev/null || true

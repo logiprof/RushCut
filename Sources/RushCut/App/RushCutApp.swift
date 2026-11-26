@@ -24,12 +24,16 @@ struct RushCutApp: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        // Avant les événements « ouvrir » du Finder : sinon le projet ouvert serait pris pour un plantage.
+        MainActor.assumeIsolated { AppModel.shared.checkRecovery() }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         Log.info("Démarrage de RushCut \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
         FontLibrary.registerImportedFonts()
         MainActor.assumeIsolated {
             KeyboardMonitor.shared.install()
-            AppModel.shared.checkRecovery()
             AppModel.shared.refreshProjects()
             Log.info("Lancement terminé")
             SelfCapture.scheduleIfRequested()

@@ -35,6 +35,8 @@ final class AppModel: ObservableObject {
     }
 
     func open(_ url: URL) {
+        // Ouvrir un projet répond à la question de récupération.
+        recoveryURL = nil
         if let editor, editor.url == url { return }
         closeProject()
         do {
@@ -77,7 +79,9 @@ final class AppModel: ObservableObject {
 
     // MARK: - Récupération
 
+    /// À appeler au tout début du lancement, avant l'ouverture éventuelle d'un projet par le Finder.
     func checkRecovery() {
+        guard editor == nil else { return }
         if let url = ProjectStore.readSessionLock() {
             recoveryURL = url
         }
