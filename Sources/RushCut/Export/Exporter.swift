@@ -190,6 +190,7 @@ final class Exporter: @unchecked Sendable {
                 AVLinearPCMIsNonInterleaved: false,
             ])
             output.audioMix = built.audioMix
+            output.audioTimePitchAlgorithm = built.pitchAlgorithm
             output.alwaysCopiesSampleData = false
             if reader.canAdd(output) {
                 reader.add(output)

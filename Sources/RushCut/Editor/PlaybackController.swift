@@ -52,6 +52,7 @@ final class PlaybackController: ObservableObject {
         let item = AVPlayerItem(asset: built.asset)
         item.videoComposition = built.videoComposition
         item.audioMix = built.audioMix
+        item.audioTimePitchAlgorithm = built.pitchAlgorithm
         let wasPlaying = isPlaying
         let rate = player.rate
         player.replaceCurrentItem(with: item)

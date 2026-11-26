@@ -48,6 +48,8 @@ extension Project {
 
     func isCompatible(_ clip: Clip, with kind: TrackKind, onAudioTrack: Bool) -> Bool {
         if clip.isText { return kind == .text || kind == .sticker }
+        if clip.isSticker { return kind == .sticker || kind == .text }
+        if clip.isEffectOnly { return kind == .effect }
         guard let m = media(clip.mediaID) else { return kind.isVisual }
         switch m.kind {
         case .audio: return kind == .audio
@@ -168,8 +170,10 @@ extension Project {
         }
     }
 
-    private func preferredKindForPlacement(_ clip: Clip) -> TrackKind {
+    func preferredKindForPlacement(_ clip: Clip) -> TrackKind {
         if clip.isText { return .text }
+        if clip.isSticker { return .sticker }
+        if clip.isEffectOnly { return .effect }
         guard let m = media(clip.mediaID) else { return .video }
         return m.kind == .audio ? .audio : .video
     }
@@ -398,7 +402,7 @@ extension Project {
         var placedOnMain = false
         switch resolved {
         case .newTrack:
-            let kind: TrackKind = isAudioPart ? .audio : (c.isText ? .text : (media(c.mediaID)?.kind == .audio ? .audio : .video))
+            let kind: TrackKind = isAudioPart ? .audio : preferredKindForPlacement(c)
             let index = addTrack(kind: kind, above: kind.isVisual ? tracks.count - 1 : nil)
             tracks[index].clips.append(c)
         case .existing(let i):
@@ -518,7 +522,7 @@ extension Project {
             } else if let ti = tracks.firstIndex(where: { $0.id == item.trackID }), !tracks[ti].isMain {
                 place(c, target: .existing(ti), asAudio: item.onAudioTrack)
             } else {
-                let kind: TrackKind = item.onAudioTrack ? .audio : (c.isText ? .text : .video)
+                let kind: TrackKind = item.onAudioTrack ? .audio : preferredKindForPlacement(c)
                 let j = freeTrack(kind: kind, start: c.start, end: c.end)
                 tracks[j].clips.append(c)
                 tracks[j].clips.sort { $0.start < $1.start }
@@ -543,6 +547,59 @@ extension Project {
             for (key, list) in c.keyframes {
                 c.keyframes[key] = list.map { var k = $0; k.time = RTime(ticks: Int64(Double(k.time.ticks) * oldRate / newRate)); return k }
             }
+        }
+    }
+
+    // MARK: - Effets, autocollants
+
+    /// Ajoute un clip d'effet (piste d'effets : agit sur tout ce qui est dessous).
+    @discardableResult
+    mutating func addEffectClip(_ type: String, name: String, at time: RTime, duration: RTime = RTime(seconds: 3)) -> UUID {
+        var clip = Clip()
+        clip.name = name
+        clip.start = time.snapped(fps: settings.frameRate)
+        clip.duration = duration
+        clip.effects = [EffectInstance(type: type)]
+        place(clip, target: .newTrack)
+        return clip.id
+    }
+
+    /// Ajoute un clip de filtre (piste d'effets).
+    @discardableResult
+    mutating func addFilterClip(_ id: String, name: String, at time: RTime, duration: RTime = RTime(seconds: 5)) -> UUID {
+        var clip = Clip()
+        clip.name = name
+        clip.start = time.snapped(fps: settings.frameRate)
+        clip.duration = duration
+        clip.filter = FilterRef(id: id)
+        place(clip, target: .newTrack)
+        return clip.id
+    }
+
+    @discardableResult
+    mutating func addSticker(_ id: String, name: String, color: RGBA, at time: RTime, duration: RTime = RTime(seconds: 3)) -> UUID {
+        var clip = Clip()
+        clip.name = name
+        clip.sticker = id
+        clip.stickerColor = color
+        clip.fit = .none
+        clip.start = time.snapped(fps: settings.frameRate)
+        clip.duration = duration
+        place(clip, target: .newTrack)
+        return clip.id
+    }
+
+    /// Applique une transition à l'entrée d'un clip de la piste principale (sauf le premier).
+    mutating func setTransition(_ type: String?, on id: UUID, duration: RTime = RTime(seconds: 0.5)) {
+        guard let loc = location(of: id), tracks[loc.track].isMain, loc.clip > 0 else { return }
+        tracks[loc.track].clips[loc.clip].transitionIn = type.map { Transition(type: $0, duration: duration) }
+    }
+
+    /// Applique la même transition à tous les raccords de la piste principale.
+    mutating func setTransitionEverywhere(_ type: String?, duration: RTime = RTime(seconds: 0.5)) {
+        guard let mi = mainTrackIndex else { return }
+        for ci in tracks[mi].clips.indices where ci > 0 {
+            tracks[mi].clips[ci].transitionIn = type.map { Transition(type: $0, duration: duration) }
         }
     }
 

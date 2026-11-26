@@ -192,15 +192,33 @@ struct TransformOverlay: View {
         return activeVisualClips.first { $0.0.id == id }?.0
     }
 
+    private func local(_ clip: Clip) -> RTime { playback.currentTime - clip.start }
+
+    /// Transformation effective à l'instant de la tête de lecture (images clés comprises).
+    private func effectiveTransform(_ clip: Clip) -> Transform {
+        var t = clip.transform
+        let l = local(clip)
+        t.positionX = clip.value(.positionX, at: l)
+        t.positionY = clip.value(.positionY, at: l)
+        t.scale = clip.value(.scale, at: l)
+        t.rotation = clip.value(.rotation, at: l)
+        return t
+    }
+
     /// Taille source d'un calque à l'échelle de l'aperçu.
     private func geometry(for clip: Clip) -> LayerGeometry? {
+        let transform = effectiveTransform(clip)
         if let text = clip.text {
             let size = TextRenderer.size(text, canvas: viewSize)
-            return Geometry.layer(sourceSize: size, canvas: viewSize, fit: .none, transform: clip.transform)
+            return Geometry.layer(sourceSize: size, canvas: viewSize, fit: .none, transform: transform)
+        }
+        if clip.isSticker {
+            let h = viewSize.height * 0.25, aspect = StickerCatalog.byID[clip.sticker ?? ""]?.aspect ?? 1
+            return Geometry.layer(sourceSize: CGSize(width: h * aspect, height: h), canvas: viewSize, fit: .none, transform: transform)
         }
         guard let media = model.project.media(clip.mediaID), media.hasVideo else { return nil }
         let source = Geometry.croppedSize(media.pixelSize, crop: clip.crop)
-        return Geometry.layer(sourceSize: source, canvas: viewSize, fit: clip.fit, transform: clip.transform)
+        return Geometry.layer(sourceSize: source, canvas: viewSize, fit: clip.fit, transform: transform)
     }
 
     private func selectTopClip(at point: CGPoint) {
@@ -224,13 +242,13 @@ struct TransformOverlay: View {
                         } else if g.contains(value.startLocation) {
                             mode = .move
                         }
-                        startTransform = clip.transform
+                        startTransform = effectiveTransform(clip)
                         startDistance = max(1, hypot(value.startLocation.x - g.center.x, value.startLocation.y - g.center.y))
                     } else {
                         selectTopClip(at: value.startLocation)
                         if let clip = selectedVisibleClip {
                             mode = .move
-                            startTransform = clip.transform
+                            startTransform = effectiveTransform(clip)
                         }
                     }
                 }
@@ -246,12 +264,17 @@ struct TransformOverlay: View {
                     guideY = abs(t.positionY) < Double(snapY)
                     if guideX { t.positionX = 0 }
                     if guideY { t.positionY = 0 }
-                    model.updateClip(clip.id, "Déplacer dans l'image", coalesce: "position") { $0.transform = t }
+                    let l = local(clip), fps = model.fps
+                    model.updateClip(clip.id, "Déplacer dans l'image", coalesce: "position") {
+                        $0.set(.positionX, t.positionX, at: l, fps: fps)
+                        $0.set(.positionY, t.positionY, at: l, fps: fps)
+                    }
                 case .scale:
                     guard let g = geometry(for: clip) else { return }
                     let d = hypot(value.location.x - g.center.x, value.location.y - g.center.y)
                     t.scale = max(0.05, min(10, startTransform.scale * Double(d / startDistance)))
-                    model.updateClip(clip.id, "Redimensionner", coalesce: "echelle") { $0.transform.scale = t.scale }
+                    let l = local(clip), fps = model.fps
+                    model.updateClip(clip.id, "Redimensionner", coalesce: "echelle") { $0.set(.scale, t.scale, at: l, fps: fps) }
                 }
             }
             .onEnded { _ in

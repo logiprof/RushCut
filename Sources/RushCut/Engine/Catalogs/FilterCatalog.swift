@@ -107,7 +107,7 @@ enum FilterCatalog {
         add("annees80", "Années 80", "Vintage", FilterRecipe(tint: 0.25, saturation: 0.25, contrast: 0.1, fade: 0.2))
         add("annees90", "Années 90", "Vintage", FilterRecipe(warmth: 0.1, tint: -0.15, saturation: -0.05, fade: 0.25, grain: 0.2))
         add("polaroid", "Polaroïd", "Vintage", FilterRecipe(warmth: 0.25, contrast: -0.1, fade: 0.4, vignette: 0.4))
-        add("vieux-film", "Vieux film", "Vintage", FilterRecipe(sepia: 0.4, fade: 0.3, vignette: 0.8, grain: 0.7))
+        add("vieux-film", "Vieux film", "Vintage", FilterRecipe(fade: 0.3, sepia: 0.4, vignette: 0.8, grain: 0.7))
         // Cinéma
         add("cinema", "Cinéma", "Cinéma", FilterRecipe(warmth: 0.15, saturation: -0.1, contrast: 0.2, vignette: 0.3))
         add("sarcelle-orange", "Sarcelle et orange", "Cinéma", FilterRecipe(warmth: 0.3, tint: -0.2, saturation: 0.1, contrast: 0.25))
