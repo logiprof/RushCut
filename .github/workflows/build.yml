@@ -50,6 +50,21 @@ jobs:
         run: |
           ./scripts/smoke-test.sh dist/RushCut.app
 
+      - name: Captures d'écran
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ./scripts/screenshots.sh /tmp/captures
+          cd /tmp/captures
+          git init -q
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -q -b ci-captures
+          git add -A
+          git commit -q -m "Captures de ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" ci-captures
+
       - name: Publier la version
         if: ${{ !contains(github.event.head_commit.message, '[pas de version]') }}
         env:
