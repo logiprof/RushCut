@@ -13,8 +13,7 @@ struct HomeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center, spacing: 16) {
-                Image(nsImage: NSApp.applicationIconImage)
-                    .resizable()
+                AppLogo()
                     .frame(width: 56, height: 56)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("RushCut").font(.system(size: 30, weight: .bold))
@@ -215,5 +214,20 @@ struct NewProjectSheet: View {
         }
         .padding(24)
         .frame(width: 620)
+    }
+}
+
+/// Logo dessiné (pas d'appel au service d'icônes du système, qui peut bloquer au démarrage).
+struct AppLogo: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .fill(LinearGradient(colors: [Color(red: 1, green: 0.37, blue: 0.23), Color(red: 0.93, green: 0.13, blue: 0.43)],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+            Image(systemName: "play.fill")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(.white)
+                .offset(x: 2)
+        }
     }
 }
