@@ -62,6 +62,16 @@ final class PlaybackController: ObservableObject {
         if wasPlaying { player.rate = rate == 0 ? 1 : rate }
     }
 
+    /// Applique de nouveaux réglages visuels ou de volume sans recharger la vidéo.
+    func update(_ built: BuiltComposition) {
+        guard let item = player.currentItem else { load(built); return }
+        item.videoComposition = built.videoComposition
+        item.audioMix = built.audioMix
+        if !isPlaying {
+            player.seek(to: currentTime.cmTime, toleranceBefore: .zero, toleranceAfter: .zero)
+        }
+    }
+
     func togglePlay() {
         isPlaying ? pause() : play()
     }

@@ -101,18 +101,59 @@ final class EditorModel: ObservableObject {
 
     // MARK: - Aperçu
 
+    private var loadedStructure: Int?
+
+    /// Empreinte de ce qui change la composition elle-même (clips, temps, médias, pistes).
+    /// Les réglages purement visuels (position, texte, opacité, fond) et le volume n'en font pas partie :
+    /// ils sont appliqués sans recharger le lecteur, ce qui garde l'aperçu fluide pendant les réglages.
+    private func structureSignature(_ project: Project) -> Int {
+        var p = project
+        p.name = ""
+        p.markers = []
+        p.createdAt = .distantPast
+        p.modifiedAt = .distantPast
+        p.settings.backgroundColor = .black
+        p.settings.backgroundMode = .color
+        for ti in p.tracks.indices {
+            p.tracks[ti].isHidden = false
+            p.tracks[ti].isLocked = false
+            for ci in p.tracks[ti].clips.indices {
+                var c = p.tracks[ti].clips[ci]
+                c.name = ""
+                c.transform = Transform()
+                c.opacity = 1
+                c.crop = CropRect()
+                c.fit = .fit
+                if c.text != nil { c.text = TextContent() }
+                c.audio.volumeDB = 0
+                c.audio.fadeIn = .zero
+                c.audio.fadeOut = .zero
+                p.tracks[ti].clips[ci] = c
+            }
+        }
+        return p.hashValue
+    }
+
     private func rebuild(immediately: Bool = false) {
         rebuildTask?.cancel()
         let snapshot = project
+        let signature = structureSignature(snapshot)
+        let swapOnly = signature == loadedStructure
         rebuildTask = Task { [weak self] in
-            if !immediately {
+            if !immediately && !swapOnly {
                 try? await Task.sleep(nanoseconds: 40_000_000)
             }
             if Task.isCancelled { return }
             do {
                 let built = try await CompositionBuilder.build(project: snapshot)
                 if Task.isCancelled { return }
-                self?.playback.load(built)
+                guard let self else { return }
+                if swapOnly {
+                    self.playback.update(built)
+                } else {
+                    self.playback.load(built)
+                    self.loadedStructure = signature
+                }
             } catch {
                 Log.error("Aperçu : \(error.localizedDescription)")
             }
