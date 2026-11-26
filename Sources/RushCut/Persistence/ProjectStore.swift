@@ -27,16 +27,27 @@ enum ProjectStore {
         return AppPaths.ensure(movies.appendingPathComponent("RushCut", isDirectory: true))
     }
 
+    /// Dates lisibles (ISO 8601, avec millisecondes).
     static var encoder: JSONEncoder {
         let e = JSONEncoder()
         e.outputFormatting = [.prettyPrinted, .sortedKeys]
-        e.dateEncodingStrategy = .iso8601
+        e.dateEncodingStrategy = .custom { date, encoder in
+            var c = encoder.singleValueContainer()
+            try c.encode(date.formatted(.iso8601.year().month().day().time(includingFractionalSeconds: true)))
+        }
         return e
     }
 
     static var decoder: JSONDecoder {
         let d = JSONDecoder()
-        d.dateDecodingStrategy = .iso8601
+        d.dateDecodingStrategy = .custom { decoder in
+            let c = try decoder.singleValueContainer()
+            if let seconds = try? c.decode(Double.self) { return Date(timeIntervalSinceReferenceDate: seconds) }
+            let text = try c.decode(String.self)
+            if let date = try? Date(text, strategy: .iso8601.year().month().day().time(includingFractionalSeconds: true)) { return date }
+            if let date = try? Date(text, strategy: .iso8601) { return date }
+            return Date()
+        }
         return d
     }
 

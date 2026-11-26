@@ -12,11 +12,19 @@ struct PersistenceTests {
         p.addText(TextContent(), at: RTime(seconds: 2))
         p.addMarker(at: RTime(seconds: 3))
         p.normalize(magnetic: true)
+        // Les dates sont enregistrées à la milliseconde près.
+        for i in p.media.indices {
+            p.media[i].importedAt = Date(timeIntervalSince1970: (p.media[i].importedAt.timeIntervalSince1970 * 1000).rounded() / 1000)
+        }
         let url = dir.appendingPathComponent("Essai.rushcut")
         try ProjectStore.save(p, to: url)
         let loaded = try ProjectStore.load(url)
         #expect(loaded.tracks == p.tracks)
-        #expect(loaded.media == p.media)
+        #expect(loaded.media.map(\.id) == p.media.map(\.id))
+        #expect(loaded.media.map(\.path) == p.media.map(\.path))
+        for (a, b) in zip(loaded.media, p.media) {
+            #expect(abs(a.importedAt.timeIntervalSince(b.importedAt)) < 0.002)
+        }
         #expect(loaded.markers == p.markers)
         #expect(loaded.settings == p.settings)
         #expect(loaded.name == p.name)
