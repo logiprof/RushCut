@@ -82,7 +82,7 @@ actor BlankVideo {
     private var asset: AVURLAsset?
 
     func get() async throws -> AVURLAsset {
-        if let asset { return asset }
+        if let asset, FileManager.default.fileExists(atPath: asset.url.path) { return asset }
         let url = AppPaths.caches.appendingPathComponent("fond-noir-v1.mov")
         if !FileManager.default.fileExists(atPath: url.path) {
             let tmp = AppPaths.caches.appendingPathComponent("fond-noir-\(UUID().uuidString).mov")
