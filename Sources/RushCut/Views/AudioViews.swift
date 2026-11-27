@@ -135,7 +135,7 @@ struct VoiceOverSheet: View {
             ZStack {
                 Circle().fill(recorder.isRecording ? Color.red.opacity(0.2) : Color.white.opacity(0.06))
                     .frame(width: 120, height: 120)
-                    .scaleEffect(1 + CGFloat(min(1, recorder.level * 4)) * 0.25)
+                    .scaleEffect(1 + CGFloat(min(Float(1), recorder.level * 4)) * 0.25)
                     .animation(.easeOut(duration: 0.08), value: recorder.level)
                 if let countdown {
                     Text("\(countdown)").font(.system(size: 48, weight: .bold))
@@ -211,8 +211,9 @@ struct LevelMeter: View {
 
     private func bar(_ value: Float) -> some View {
         GeometryReader { g in
-            let db = 20 * log10(max(value, 1e-4))
-            let fraction = CGFloat(max(0, min(1, (db + 48) / 48)))
+            let db: Float = 20 * log10(max(value, 1e-4))
+            let clamped: Float = max(0, min(1, (db + 48) / 48))
+            let fraction = CGFloat(clamped)
             ZStack(alignment: .bottom) {
                 RoundedRectangle(cornerRadius: 1).fill(Color.white.opacity(0.08))
                 LinearGradient(colors: [.green, .green, .yellow, .red], startPoint: .bottom, endPoint: .top)

@@ -355,8 +355,9 @@ enum SoundLibrary {
             var s = [Float](repeating: 0, count: Synth.frames(0.25))
             for i in s.indices {
                 let t = Double(i) / Synth.sampleRate
-                phase += (300 + 900 * exp(-t * 60)) / Synth.sampleRate
-                s[i] = Float(sin(2 * .pi * phase) * exp(-t * 30))
+                let f: Double = 300 + 900 * exp(-t * 60)
+                phase += f / Synth.sampleRate
+                s[i] = Float(sin(twoPi * phase) * exp(-t * 30))
             }
             mix.add(s, at: 0)
         case "clic":
@@ -394,7 +395,8 @@ enum SoundLibrary {
             var rng = Synth.Random(12)
             for i in 0..<420 {
                 let t = rng.unit() * 3.4
-                let env = Float(min(1, t / 0.4) * min(1, (3.8 - t) / 1.2))
+                let rampIn: Double = min(1, t / 0.4), rampOut: Double = min(1, (3.8 - t) / 1.2)
+                let env = Float(rampIn * rampOut)
                 mix.add(Synth.clap(seed: UInt64(i)), at: t, gain: 0.18 * env, pan: rng.next() * 0.9)
             }
             mix.reverb(amount: 0.6)

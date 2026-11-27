@@ -87,10 +87,13 @@ final class TapContext: @unchecked Sendable {
         func run(_ samples: UnsafeMutablePointer<Float>, count: Int, stride: Int, channel: Int) {
             let ch = min(channel, 7)
             // Coefficients : passe-haut ~90 Hz, attaque 5 ms, relâchement 120 ms.
-            let rc = 1 / (2 * Float.pi * 90), dt = 1 / Float(sampleRate)
-            let hpA = rc / (rc + dt)
-            let attack = exp(-1 / (0.005 * Float(sampleRate))), release = exp(-1 / (0.12 * Float(sampleRate)))
-            let threshold = 0.004 + 0.05 * denoise * denoise
+            let sr = Float(sampleRate)
+            let rc: Float = 1 / (2 * Float.pi * 90)
+            let dt: Float = 1 / sr
+            let hpA: Float = rc / (rc + dt)
+            let attack: Float = exp(-1 / (0.005 * sr))
+            let release: Float = exp(-1 / (0.12 * sr))
+            let threshold: Float = 0.004 + 0.05 * denoise * denoise
             var peak: Float = 0
             var i = 0
             while i < count {
@@ -100,8 +103,14 @@ final class TapContext: @unchecked Sendable {
                     hpX[ch] = x; hpY[ch] = y
                     x = y
                     let level = abs(x)
-                    envelope[ch] = level > envelope[ch] ? attack * envelope[ch] + (1 - attack) * level : release * envelope[ch] + (1 - release) * level
-                    let target: Float = envelope[ch] >= threshold ? 1 : max(0.05, pow(envelope[ch] / threshold, 1 + 2 * denoise))
+                    let k: Float = level > envelope[ch] ? attack : release
+                    envelope[ch] = k * envelope[ch] + (1 - k) * level
+                    var target: Float = 1
+                    if envelope[ch] < threshold {
+                        let ratio: Float = envelope[ch] / threshold
+                        let exponent: Float = 1 + 2 * denoise
+                        target = max(0.05, pow(ratio, exponent))
+                    }
                     gateGain[ch] += (target - gateGain[ch]) * 0.002
                     x *= gateGain[ch]
                 }
@@ -109,7 +118,10 @@ final class TapContext: @unchecked Sendable {
                 // Limiteur doux : évite la saturation quand le gain dépasse 0 dB.
                 if gain > 1 {
                     let a = abs(x)
-                    if a > 0.8 { x = (x < 0 ? -1 : 1) * (0.8 + 0.2 * tanh((a - 0.8) / 0.2)) }
+                    if a > 0.8 {
+                        let soft: Float = 0.8 + 0.2 * tanh((a - 0.8) / 0.2)
+                        x = x < 0 ? -soft : soft
+                    }
                 }
                 samples[i * stride] = x
                 peak = max(peak, abs(x))

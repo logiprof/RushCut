@@ -2,6 +2,8 @@ import Foundation
 
 /// Petit synthétiseur utilisé pour fabriquer la bibliothèque de sons de RushCut.
 /// Tout est calculé par le programme : aucun enregistrement extérieur, donc aucun droit d'auteur à payer.
+let twoPi: Double = 2 * Double.pi
+
 enum Synth {
     static let sampleRate = 44_100.0
 
@@ -35,8 +37,16 @@ enum Synth {
             let d = t - attack
             return d < decay ? 1 - (1 - sustain) * d / max(decay, 1e-4) : sustain
         }
-        let level = hold < attack ? hold / max(attack, 1e-4) : (hold - attack < decay ? 1 - (1 - sustain) * (hold - attack) / max(decay, 1e-4) : sustain)
-        return max(0, level * (1 - (t - hold) / max(release, 1e-4)))
+        let level: Double
+        if hold < attack {
+            level = hold / max(attack, 1e-4)
+        } else if hold - attack < decay {
+            level = 1 - (1 - sustain) * (hold - attack) / max(decay, 1e-4)
+        } else {
+            level = sustain
+        }
+        let fall: Double = 1 - (t - hold) / max(release, 1e-4)
+        return max(0, level * fall)
     }
 
     /// Note d'oscillateur(s), avec désaccord, vibrato et filtre passe-bas d'un pôle (qui s'ouvre puis se referme).
@@ -53,14 +63,15 @@ enum Synth {
         }
         for i in 0..<n {
             let t = Double(i) / sampleRate
-            let vib = vibrato > 0 ? 1 + vibrato * sin(2 * .pi * 5.5 * t) * min(1, t * 2) : 1
+            var vib: Double = 1
+            if vibrato > 0 { vib += vibrato * sin(twoPi * 5.5 * t) * min(1, t * 2) }
             var s = 0.0
             for v in 0..<voices {
                 let f = freq * vib * ratios[v]
                 let dt = f / sampleRate
                 var p = phases[v]
                 switch wave {
-                case .sine: s += sin(2 * .pi * p)
+                case .sine: s += sin(twoPi * p)
                 case .saw: s += 2 * p - 1 - polyBLEP(p, dt)
                 case .square:
                     var q = p < 0.5 ? 1.0 : -1.0
@@ -77,7 +88,7 @@ enum Synth {
             let env = envelope(i, hold: hold, attack: attack, decay: decay, sustain: sustain, release: release)
             if let cutoff {
                 let c = min(18_000, cutoff * (1 + cutoffEnv * env))
-                let a = 1 - exp(-2 * .pi * c / sampleRate)
+                let a: Double = 1 - exp(-twoPi * c / sampleRate)
                 lp += a * (s - lp)
                 s = lp
             }
@@ -116,8 +127,13 @@ enum Synth {
         for i in 0..<n {
             let t = Double(i) / sampleRate
             var s = 0.0
-            for (ratio, amp, d) in partials { s += amp * sin(2 * .pi * freq * ratio * t) * exp(-t / (decay * d)) }
-            out[i] = Float(s * min(1, t * 400) * 0.6)
+            for (ratio, amp, d) in partials {
+                let w: Double = twoPi * freq * ratio * t
+                let e: Double = exp(-t / (decay * d))
+                s += amp * sin(w) * e
+            }
+            let attack: Double = min(1, t * 400)
+            out[i] = Float(s * attack * 0.6)
         }
         return out
     }
@@ -130,8 +146,12 @@ enum Synth {
             let t = Double(i) / sampleRate
             let env = envelope(i, hold: hold, attack: 0.005, decay: 1.5, sustain: 0.35, release: release)
             let bright = exp(-t * 6)
-            let s = sin(2 * .pi * freq * t) + 0.35 * bright * sin(2 * .pi * freq * 2 * t) + 0.15 * bright * sin(2 * .pi * freq * 4 * t)
-            out[i] = Float(s * env * (1 + 0.08 * sin(2 * .pi * 4.5 * t)) * 0.6)
+            let w: Double = twoPi * freq * t
+            var s: Double = sin(w)
+            s += 0.35 * bright * sin(2 * w)
+            s += 0.15 * bright * sin(4 * w)
+            let tremolo: Double = 1 + 0.08 * sin(twoPi * 4.5 * t)
+            out[i] = Float(s * env * tremolo * 0.6)
         }
         return out
     }
@@ -142,8 +162,11 @@ enum Synth {
         var out = [Float](repeating: 0, count: n)
         for i in 0..<n {
             let t = Double(i) / sampleRate
-            let s = sin(2 * .pi * freq * t) * exp(-t * 7) + 0.3 * sin(2 * .pi * freq * 3.9 * t) * exp(-t * 25)
-            out[i] = Float(s * min(1, t * 1000) * 0.8)
+            let w: Double = twoPi * freq * t
+            let a: Double = sin(w) * exp(-t * 7)
+            let b: Double = 0.3 * sin(3.9 * w) * exp(-t * 25)
+            let attack: Double = min(1, t * 1000)
+            out[i] = Float((a + b) * attack * 0.8)
         }
         return out
     }
@@ -158,7 +181,9 @@ enum Synth {
             let t = Double(i) / sampleRate
             let f = 45 + 110 * punch * exp(-t * 28)
             phase += f / sampleRate
-            out[i] = Float(sin(2 * .pi * phase) * exp(-t * 7) + (t < 0.004 ? 0.4 : 0))
+            let body: Double = sin(twoPi * phase) * exp(-t * 7)
+            let click: Double = t < 0.004 ? 0.4 : 0
+            out[i] = Float(body + click)
         }
         return out
     }
@@ -173,7 +198,9 @@ enum Synth {
             let white = rng.next()
             let hp = white - prev
             prev = white
-            out[i] = Float(Double(hp) * 0.55 * exp(-t * 16) + sin(2 * .pi * tone * t) * 0.5 * exp(-t * 30))
+            let noisePart: Double = Double(hp) * 0.55 * exp(-t * 16)
+            let tonePart: Double = sin(twoPi * tone * t) * 0.5 * exp(-t * 30)
+            out[i] = Float(noisePart + tonePart)
         }
         return out
     }
@@ -201,7 +228,8 @@ enum Synth {
         var bp: Float = 0, prev: Float = 0
         for i in 0..<n {
             let t = Double(i) / sampleRate
-            let burst = t < 0.03 ? exp(-(t.truncatingRemainder(dividingBy: 0.01)) * 300) : exp(-(t - 0.03) * 18)
+            let burst: Double
+            if t < 0.03 { burst = exp(-300 * t.truncatingRemainder(dividingBy: 0.01)) } else { burst = exp(-18 * (t - 0.03)) }
             let w = rng.next()
             let hp = w - prev
             prev = w
@@ -220,12 +248,13 @@ enum Synth {
         for i in 0..<n {
             let p = Double(i) / Double(n)
             let f = f0 * pow(f1 / f0, p)
-            let fc = 2 * sin(.pi * min(f, sampleRate / 6) / sampleRate)
+            let fc: Double = 2 * sin(Double.pi * min(f, sampleRate / 6) / sampleRate)
             let x = Double(rng.next())
             low += fc * band
             let high = x - low - q * band
             band += fc * high
-            let env = rise ? pow(p, 1.6) * (1 - pow(p, 40)) : sin(.pi * p) * sin(.pi * p)
+            let env: Double
+            if rise { env = pow(p, 1.6) * (1 - pow(p, 40)) } else { let h: Double = sin(Double.pi * p); env = h * h }
             out[i] = Float(band * env * 0.9)
         }
         return out
@@ -249,7 +278,7 @@ final class SynthMix {
     func add(_ s: [Float], at seconds: Double, gain: Float = 1, pan: Float = 0) {
         let start = Int(seconds * sampleRate)
         guard start < count else { return }
-        let angle = (Double(pan) + 1) * .pi / 4
+        let angle: Double = (Double(pan) + 1) * Double.pi / 4
         let gl = gain * Float(cos(angle)) * 1.414, gr = gain * Float(sin(angle)) * 1.414
         let end = min(count, start + s.count)
         var i = max(0, start)
