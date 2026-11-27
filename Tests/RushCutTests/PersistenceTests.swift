@@ -79,7 +79,8 @@ struct PersistenceTests {
             try ProjectStore.save(p, to: url)
         }
         let files = try FileManager.default.contentsOfDirectory(atPath: url.path)
-        #expect(files == ["project.json"])
+        #expect(files.sorted() == ["Versions", "project.json"], "Pas de fichier temporaire, seulement l'historique des versions")
+        #expect(ProjectStore.versions(of: url).count == 1, "Une seule version gardée en moins de 5 minutes")
         #expect(try ProjectStore.load(url).name == "Version 4")
     }
 }
