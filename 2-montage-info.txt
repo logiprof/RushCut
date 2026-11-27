@@ -1,0 +1,34 @@
+03:33:59
+03:34:12
+0 {
+    Height = 900;
+    Width = 1440;
+    X = 240;
+    Y = 61;
+} 1 Démo RushCut
+0 {
+    Height = 30;
+    Width = 1920;
+    X = 0;
+    Y = 0;
+}  
+0 {
+    Height = 30;
+    Width = 1920;
+    X = 0;
+    Y = 0;
+}  
+0 {
+    Height = 30;
+    Width = 1920;
+    X = 0;
+    Y = 0;
+}  
+0 {
+    Height = 30;
+    Width = 1920;
+    X = 0;
+    Y = 0;
+}  
+"LSDisplayName"="RushCut"
+"pid"=17282
