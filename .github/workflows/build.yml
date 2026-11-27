@@ -36,6 +36,7 @@ jobs:
           swift build -c release -Xswiftc -Xfrontend -Xswiftc -solver-expression-time-threshold=60 -Xswiftc -Xfrontend -Xswiftc -warn-long-expression-type-checking=1000 2>&1 | tee build.log
 
       - name: Tests
+        timeout-minutes: 15
         run: |
           set -o pipefail
           swift test -Xswiftc -Xfrontend -Xswiftc -solver-expression-time-threshold=60 2>&1 | tee test.log
