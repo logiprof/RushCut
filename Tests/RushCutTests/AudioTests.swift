@@ -65,6 +65,29 @@ struct AudioTests {
         #expect(loud / quiet > 1.4 && loud / quiet < 1.8, "+4 dB ≈ ×1,58 (mesuré : \(loud / quiet)) ; RMS par demi-seconde : \(windows) ; appels : \(TapDiagnostics.summary)")
     }
 
+    @Test func secondClipPlaysToTheEnd() async throws {
+        var report: [String] = []
+        for (db, tap) in [(0.0, true), (0.0, false), (4.0, false), (4.0, true)] {
+            AudioTap.enabled = tap
+            defer { AudioTap.enabled = true }
+            let dir = TestMedia.tempDirectory()
+            let sine = try TestMedia.audio(in: dir, seconds: 2)
+            var project = Project()
+            let id = try await importMedia(sine, into: &project)
+            _ = project.addMedia(id, at: .zero)!
+            let b = project.addMedia(id, at: RTime(seconds: 2))!
+            project.updateClip(b) { $0.audio.volumeDB = db }
+            project.normalize(magnetic: true)
+            let out = try await export(project, in: dir)
+            var windows: [String] = []
+            for i in 0..<8 { windows.append(String(format: "%.2f", try await AudioProbe.rms(out, from: Double(i) * 0.5, to: Double(i + 1) * 0.5))) }
+            let duration = try await AVURLAsset(url: sine).load(.duration).seconds
+            let clips = project.tracks.map { $0.clips.map { String(format: "%.3f+%.3f", $0.start.seconds, $0.duration.seconds) } }
+            report.append("dB \(db) tap \(tap) : \(windows) source \(duration) pistes \(clips)")
+        }
+        #expect(Bool(false), "\(report.joined(separator: " | "))")
+    }
+
     @Test func duckingLowersMusic() async throws {
         let dir = TestMedia.tempDirectory()
         let music = try TestMedia.audio(in: dir, name: "musique.m4a", seconds: 4)

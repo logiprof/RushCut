@@ -194,7 +194,11 @@ final class TapContext: @unchecked Sendable {
 
 /// Traitement audio en temps réel branché sur la composition (aperçu et export).
 enum AudioTap {
+    /// Désactivable pour les tests de diagnostic.
+    nonisolated(unsafe) static var enabled = true
+
     static func attach(to params: AVMutableAudioMixInputParameters, segments: [AudioSegment]) {
+        guard enabled else { return }
         let context = TapContext(segments: segments)
         var callbacks = MTAudioProcessingTapCallbacks(
             version: kMTAudioProcessingTapCallbacksVersion_0,
