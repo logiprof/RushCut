@@ -291,6 +291,19 @@ struct RulerView: View {
                     i += 1
                 }
             }
+            if model.inPoint != nil || model.outPoint != nil {
+                let a = CGFloat((model.inPoint ?? .zero).seconds * pps)
+                let b = CGFloat((model.outPoint ?? model.project.duration).seconds * pps)
+                Rectangle()
+                    .fill(Color.accentColor.opacity(0.28))
+                    .frame(width: max(2, b - a), height: TimelineMetrics.rulerHeight)
+                    .offset(x: a)
+                    .overlay(alignment: .topLeading) {
+                        Text("E/S").font(.system(size: 8, weight: .bold)).foregroundStyle(Color.accentColor).offset(x: a + 3, y: 1)
+                    }
+                    .allowsHitTesting(false)
+                    .help("Plage d'export (I : entrée, O : sortie, X : effacer)")
+            }
             ForEach(markers) { marker in
                 Image(systemName: "bookmark.fill")
                     .font(.system(size: 10))

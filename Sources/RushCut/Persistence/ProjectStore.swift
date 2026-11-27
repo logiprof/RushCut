@@ -87,9 +87,51 @@ enum ProjectStore {
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         let data = try encoder.encode(project)
         try data.write(to: url.appendingPathComponent(projectFileName), options: [.atomic])
+        archiveVersion(data, in: url)
         if let poster {
             writeJPEG(poster, to: url.appendingPathComponent(posterFileName))
         }
+    }
+
+    // MARK: - Historique des versions
+
+    static let versionsFolderName = "Versions"
+    static let maxVersions = 20
+    /// Écart minimal entre deux versions conservées automatiquement.
+    static let versionInterval: TimeInterval = 5 * 60
+
+    struct SavedVersion: Identifiable, Hashable {
+        let url: URL
+        let date: Date
+        var id: URL { url }
+    }
+
+    static func versions(of package: URL) -> [SavedVersion] {
+        let folder = package.appendingPathComponent(versionsFolderName, isDirectory: true)
+        let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
+        return files.filter { $0.pathExtension == "json" }.compactMap { f in
+            let date = (try? f.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
+            return SavedVersion(url: f, date: date)
+        }
+        .sorted { $0.date > $1.date }
+    }
+
+    /// Garde une copie du projet au plus toutes les 5 minutes (20 copies au maximum).
+    static func archiveVersion(_ data: Data, in package: URL, force: Bool = false) {
+        let folder = AppPaths.ensure(package.appendingPathComponent(versionsFolderName, isDirectory: true))
+        let existing = versions(of: package)
+        if !force, let last = existing.first, Date().timeIntervalSince(last.date) < versionInterval { return }
+        let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
+        try? data.write(to: folder.appendingPathComponent("\(stamp).json"), options: [.atomic])
+        for old in versions(of: package).dropFirst(maxVersions) { try? FileManager.default.removeItem(at: old.url) }
+    }
+
+    static func loadVersion(_ version: SavedVersion) throws -> Project {
+        let data = try Data(contentsOf: version.url)
+        var project = try decoder.decode(Project.self, from: data)
+        migrate(&project)
+        project.normalize(magnetic: true)
+        return project
     }
 
     static func load(_ url: URL) throws -> Project {

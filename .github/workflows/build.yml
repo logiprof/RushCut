@@ -40,9 +40,16 @@ jobs:
           set -o pipefail
           swift test -Xswiftc -Xfrontend -Xswiftc -solver-expression-time-threshold=60 2>&1 | tee test.log
 
+      - name: Vérifier le lien de téléchargement de FFmpeg
+        continue-on-error: true
+        run: |
+          for arch in arm64 amd64; do
+            curl -sIL -o /dev/null -w "$arch : %{http_code} %{url_effective}\n" "https://ffmpeg.martin-riedl.de/redirect/latest/macos/$arch/release/ffmpeg.zip" || true
+          done
+
       - name: Créer l'application
         run: |
-          VERSION="0.1.${{ github.run_number }}"
+          VERSION="0.2.${{ github.run_number }}"
           ./scripts/build-app.sh "$VERSION" "${{ github.run_number }}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 

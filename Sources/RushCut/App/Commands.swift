@@ -88,6 +88,30 @@ struct RushCommands: Commands {
             Button("Supprimer (⌫)") { editor?.deleteSelection() }
                 .disabled(editor == nil)
         }
+        CommandMenu("Outils") {
+            Button("Supprimer les silences du clip") { if let id = editor?.singleSelection?.id { editor?.removeSilences(id) } }
+                .disabled(editor?.singleSelection == nil)
+            Button("Image figée à la tête de lecture") { if let id = editor?.singleSelection?.id { editor?.freezeFrame(id) } }
+                .disabled(editor?.singleSelection == nil)
+            Button("Lire le clip à l'envers") { if let id = editor?.singleSelection?.id { editor?.reverseClip(id) } }
+                .disabled(editor?.singleSelection == nil)
+            Button("Remplacer le clip…") { if let id = editor?.singleSelection?.id { editor?.replaceClipPanel(id) } }
+                .disabled(editor?.singleSelection == nil)
+            Button("Suivre le mouvement (calque sur la vidéo)") { if let id = editor?.singleSelection?.id { editor?.trackMotion(id) } }
+                .disabled(editor?.singleSelection == nil)
+            Divider()
+            Button("Enregistrer l'écran…") { editor?.screenRecordingPresented = true }
+                .disabled(editor == nil)
+            Toggle("Utiliser des proxys pour l'aperçu (vidéos 4K)", isOn: Binding(get: { editor?.useProxies ?? false }, set: { editor?.setUseProxies($0) }))
+                .disabled(editor == nil)
+            Divider()
+            Button("Rassembler les médias dans le projet") { editor?.collectMedia() }
+                .disabled(editor == nil)
+            Button("Historique des versions…") { editor?.versionsPresented = true }
+                .disabled(editor == nil)
+            Button("Module de conversion (FFmpeg)…") { editor?.pendingConversion = []; editor?.ffmpegPresented = true }
+                .disabled(editor == nil)
+        }
         CommandMenu("Timeline") {
             Button("Lecture / pause (Espace)") { editor?.playback.togglePlay() }
                 .disabled(editor == nil)
@@ -168,6 +192,9 @@ final class KeyboardMonitor {
         case (_, "q", false): editor.trimToPlayhead(keepRight: true)
         case (_, "w", false): editor.trimToPlayhead(keepRight: false)
         case (_, "m", false): editor.addMarker()
+        case (_, "i", false): editor.setInPoint()
+        case (_, "o", false): editor.setOutPoint()
+        case (_, "x", false): editor.clearInOut()
         case (_, "n", false): editor.snapping.toggle()
         case (_, "z", true): editor.zoomToFit()
         case (53, _, false): editor.selection.removeAll()

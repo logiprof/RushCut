@@ -77,6 +77,9 @@ struct ExportSettings {
     var bitrateChoice: BitrateChoice = .recommended
     var customMbps: Double = 10
     var audioBitrate: Int = 256_000
+    /// Partie de la timeline à exporter (nil = tout).
+    var rangeStart: RTime? = nil
+    var rangeEnd: RTime? = nil
 
     /// Taille de sortie, en gardant les proportions du projet (dimensions paires).
     static func outputSize(project: ProjectSettings, resolution: ExportResolution) -> CGSize {
@@ -168,7 +171,10 @@ final class Exporter: @unchecked Sendable {
         try? FileManager.default.removeItem(at: temporary)
 
         let reader = try AVAssetReader(asset: built.asset)
-        reader.timeRange = CMTimeRange(start: .zero, duration: built.duration.cmTime)
+        let rangeStart = max(.zero, min(settings.rangeStart ?? .zero, built.duration))
+        let rangeEnd = min(built.duration, settings.rangeEnd ?? built.duration)
+        guard rangeEnd > rangeStart else { throw RushError.exportFailed("la plage à exporter est vide.") }
+        reader.timeRange = CMTimeRange(start: rangeStart.cmTime, end: rangeEnd.cmTime)
         let videoTracks = try await built.asset.loadTracks(withMediaType: .video)
         let videoOutput = AVAssetReaderVideoCompositionOutput(videoTracks: videoTracks, videoSettings: [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
@@ -254,14 +260,15 @@ final class Exporter: @unchecked Sendable {
             reader.cancelReading()
             throw RushError.exportFailed(writer.error?.localizedDescription ?? "écriture impossible")
         }
-        writer.startSession(atSourceTime: .zero)
+        writer.startSession(atSourceTime: rangeStart.cmTime)
 
-        let total = max(built.duration.seconds, 0.001)
+        let total = max((rangeEnd - rangeStart).seconds, 0.001)
+        let offset = rangeStart.seconds
         let videoQueue = DispatchQueue(label: "ch.logiprof.rushcut.export.video")
         let audioQueue = DispatchQueue(label: "ch.logiprof.rushcut.export.audio")
 
         async let videoDone: Void = pump(input: videoInput, output: videoOutput, queue: videoQueue) { time in
-            progress(min(1, time.seconds / total))
+            progress(min(1, max(0, (time.seconds - offset) / total)))
         }
         if let audioInput, let audioOutput {
             async let audioDone: Void = pump(input: audioInput, output: audioOutput, queue: audioQueue, onSample: nil)

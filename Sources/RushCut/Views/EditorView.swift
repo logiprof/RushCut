@@ -61,9 +61,15 @@ struct EditorView: View {
                 .help("Exporter la vidéo (⌘E)")
             }
         }
+        .overlay(alignment: .top) {
+            ToolStatusBanner(model: model).padding(.top, 6)
+        }
         .sheet(isPresented: $model.exportPresented) {
             ExportSheet(model: model)
         }
+        .sheet(isPresented: $model.versionsPresented) { VersionsSheet(model: model) }
+        .sheet(isPresented: $model.ffmpegPresented) { FFmpegSheet(model: model) }
+        .sheet(isPresented: $model.screenRecordingPresented) { ScreenRecordSheet(model: model) }
     }
 
     private var statusText: String {

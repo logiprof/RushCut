@@ -54,6 +54,25 @@ final class EditorModel: ObservableObject {
     @Published var subtitleStatus: String?
     @Published var subtitleBusy = false
     private var audioTask: Task<Void, Never>?
+    @Published var inPoint: RTime?
+    @Published var outPoint: RTime?
+    @Published var toolStatus: String?
+    @Published var toolMessage: String? {
+        didSet {
+            guard toolMessage != nil else { return }
+            let current = toolMessage
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 4_000_000_000)
+                if self.toolMessage == current { self.toolMessage = nil }
+            }
+        }
+    }
+    @Published var useProxies = UserDefaults.standard.bool(forKey: "proxys")
+    @Published var pendingConversion: [URL] = [] { didSet { if !pendingConversion.isEmpty { ffmpegPresented = true } } }
+    @Published var ffmpegPresented = false
+    @Published var versionsPresented = false
+    @Published var screenRecordingPresented = false
+    private var proxiesLoaded = UserDefaults.standard.bool(forKey: "proxys")
     @Published var timelineVisibleWidth: CGFloat = 800
 
     let playback = PlaybackController()
@@ -178,7 +197,9 @@ final class EditorModel: ObservableObject {
         rebuildTask?.cancel()
         let snapshot = project
         let signature = structureSignature(snapshot) &+ AudioPreprocessor.signature(snapshot)
-        let swapOnly = signature == loadedStructure
+        let swapOnly = signature == loadedStructure && proxiesLoaded == useProxies
+        let proxies = useProxies
+        proxiesLoaded = proxies
         scheduleAudioPreprocessing(snapshot)
         rebuildTask = Task { [weak self] in
             if !immediately && !swapOnly {
@@ -186,7 +207,7 @@ final class EditorModel: ObservableObject {
             }
             if Task.isCancelled { return }
             do {
-                let built = try await CompositionBuilder.build(project: snapshot)
+                let built = try await CompositionBuilder.build(project: snapshot, resolve: EditorModel.previewResolver(useProxies: proxies))
                 if Task.isCancelled { return }
                 guard let self else { return }
                 if swapOnly {
@@ -367,6 +388,7 @@ final class EditorModel: ObservableObject {
         defer { importInProgress = false }
         var results: [(Int, MediaRef)] = []
         var failures: [String] = []
+        var unsupported: [URL] = []
         await withTaskGroup(of: (Int, Result<MediaRef, Error>).self) { group in
             for (i, file) in files.enumerated() {
                 group.addTask {
@@ -377,7 +399,9 @@ final class EditorModel: ObservableObject {
             for await (i, result) in group {
                 switch result {
                 case .success(let media): results.append((i, media))
-                case .failure(let error): failures.append("• \(files[i].lastPathComponent) : \(error.localizedDescription)")
+                case .failure(let error):
+                    if let e = error as? RushError, case .unsupportedFormat = e { unsupported.append(files[i]) }
+                    else { failures.append("• \(files[i].lastPathComponent) : \(error.localizedDescription)") }
                 }
             }
         }
@@ -399,7 +423,8 @@ final class EditorModel: ObservableObject {
             AppModel.shared.alert = AppAlert(title: "Certains fichiers n'ont pas été importés",
                                              message: failures.prefix(12).joined(separator: "\n"))
         }
-        Log.info("Import : \(added.count) ajoutés, \(failures.count) refusés")
+        if !unsupported.isEmpty { convertAndImport(unsupported) }
+        Log.info("Import : \(added.count) ajoutés, \(failures.count) refusés, \(unsupported.count) à convertir")
         return ids
     }
 

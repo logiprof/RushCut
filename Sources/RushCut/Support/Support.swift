@@ -14,7 +14,7 @@ enum RushError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .unsupportedFormat(let ext):
-            return "Le format « \(ext.uppercased()) » n'est pas encore pris en charge. La conversion automatique arrivera dans la version V1 ; en attendant, convertissez le fichier en MP4 ou MOV."
+            return "Le format « \(ext.uppercased()) » n'est pas lu directement par macOS. RushCut peut le convertir en MP4 avec le module de conversion (FFmpeg, téléchargé une seule fois)."
         case .unreadable(let name):
             return "Le fichier « \(name) » est illisible ou endommagé."
         case .missingMedia(let name):

@@ -219,6 +219,7 @@ struct ClipInspector: View {
                 CropInspector(model: model, clip: clip, source: media.pixelSize)
             }
         }
+        ClipToolsSection(model: model, clip: clip)
     }
 
     @ViewBuilder private var audioTab: some View {
@@ -242,6 +243,11 @@ struct ClipInspector: View {
             if !onAudioTrack && media?.kind == .video {
                 Button("Détacher l'audio") { model.detachAudio() }
             }
+        }
+        if media != nil {
+            Button { model.removeSilences(clip.id) } label: { Label("Supprimer les silences", systemImage: "waveform.path.badge.minus") }
+                .controlSize(.small)
+                .disabled(model.toolStatus != nil)
         }
         InspectorSection(title: "Nettoyage et mixage") {
             SliderField(title: "Réduction de bruit", value: clip.audio.denoise * 100, range: 0...100, unit: "%") { v in

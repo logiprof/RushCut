@@ -42,6 +42,9 @@ struct ExportSheet: View {
     @State private var customMbps: Double = 10
     @State private var exporter: Exporter?
     @State private var task: Task<Void, Never>?
+    @State private var kind: ExportKind = .video
+    @State private var onlyRange = false
+    @State private var withSubtitles = false
 
     private var settings: ExportSettings {
         var s = ExportSettings(destination: destination)
@@ -51,18 +54,22 @@ struct ExportSheet: View {
         s.frameRate = frameRate
         s.bitrateChoice = bitrate
         s.customMbps = customMbps
+        if onlyRange {
+            s.rangeStart = model.inPoint
+            s.rangeEnd = model.outPoint
+        }
         return s
     }
 
     private var destination: URL {
-        let ext = codec == .prores422 ? "mov" : container.rawValue
+        let ext = kind != .video ? kind.fileExtension : (codec == .prores422 ? "mov" : container.rawValue)
         let clean = ProjectStore.sanitize(name.isEmpty ? model.project.name : name)
         return folder.appendingPathComponent(clean).appendingPathExtension(ext)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Exporter la vidéo").font(.title2.weight(.semibold))
+            Text("Exporter").font(.title2.weight(.semibold))
             switch phase {
             case .settings: settingsForm
             case .exporting(let progress): progressView(progress)
@@ -84,8 +91,13 @@ struct ExportSheet: View {
 
     private var settingsForm: some View {
         let output = ExportSettings.outputSize(project: model.project.settings, resolution: resolution)
-        let bytes = settings.estimatedBytes(project: model.project.settings, duration: model.project.duration)
+        let bytes = settings.estimatedBytes(project: model.project.settings, duration: exportDuration)
         return VStack(alignment: .leading, spacing: 14) {
+            Picker("", selection: $kind) {
+                ForEach(ExportKind.allCases) { Text($0.label).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
             Form {
                 TextField("Nom du fichier", text: $name)
                 LabeledContent("Dossier") {
@@ -94,6 +106,68 @@ struct ExportSheet: View {
                         Button("Choisir…") { chooseFolder() }
                     }
                 }
+                if model.inPoint != nil || model.outPoint != nil {
+                    Toggle("Seulement la plage entre les points d'entrée et de sortie (\(rangeLabel))", isOn: $onlyRange)
+                        .disabled(kind == .still)
+                }
+                if kind == .video && !model.project.subtitleClips.isEmpty {
+                    Toggle("Créer aussi le fichier de sous-titres (.srt)", isOn: $withSubtitles)
+                }
+                if kind == .video { videoFields }
+                if kind == .gif { LabeledContent("GIF", value: "640 px de large au plus, 15 images/s, en boucle") }
+                if kind == .still { LabeledContent("Image", value: "Image à la tête de lecture (\(model.playhead.timecode(fps: model.fps))), à la résolution choisie") }
+                if kind == .still {
+                    Picker("Résolution", selection: $resolution) {
+                        ForEach(ExportResolution.allCases) { r in
+                            let size = ExportSettings.outputSize(project: model.project.settings, resolution: r)
+                            Text("\(r.label) — \(Int(size.width))×\(Int(size.height))").tag(r)
+                        }
+                    }
+                }
+                if kind == .audio { LabeledContent("Son", value: "AAC 256 kb/s, mixé comme dans la vidéo") }
+            }
+            .formStyle(.grouped)
+
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    if kind == .video {
+                        Text("\(Int(output.width))×\(Int(output.height)) · \(frameRate) i/s · durée \(exportDuration.shortLabel)")
+                        Text("Taille estimée : \(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file))")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Durée \(exportDuration.shortLabel)")
+                    }
+                }
+                .font(.callout)
+                Spacer()
+                Button("Annuler") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("En arrière-plan") { startInBackground() }
+                    .help("L'export continue pendant que vous montez ; une notification signale la fin.")
+                    .disabled(model.project.duration == .zero)
+                Button("Exporter") { start() }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(model.project.duration == .zero)
+            }
+            if model.project.duration == .zero {
+                Text("La timeline est vide : ajoutez au moins un clip avant d'exporter.")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+        }
+    }
+
+    private var rangeLabel: String {
+        "\((model.inPoint ?? .zero).timecode(fps: model.fps)) → \((model.outPoint ?? model.project.duration).timecode(fps: model.fps))"
+    }
+
+    private var exportDuration: RTime {
+        guard onlyRange else { return model.project.duration }
+        return (model.outPoint ?? model.project.duration) - (model.inPoint ?? .zero)
+    }
+
+    @ViewBuilder private var videoFields: some View {
                 Picker("Préréglage", selection: $preset) {
                     ForEach(Preset.allCases) { Text($0.label).tag($0) }
                 }
@@ -130,30 +204,6 @@ struct ExportSheet: View {
                         LabeledContent("Débit vidéo", value: String(format: "%.1f Mb/s", Double(settings.videoBitrate(project: model.project.settings)) / 1_000_000))
                     }
                 }
-            }
-            .formStyle(.grouped)
-
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(Int(output.width))×\(Int(output.height)) · \(frameRate) i/s · durée \(model.project.duration.shortLabel)")
-                    Text("Taille estimée : \(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file))")
-                        .foregroundStyle(.secondary)
-                }
-                .font(.callout)
-                Spacer()
-                Button("Annuler") { dismiss() }
-                    .keyboardShortcut(.cancelAction)
-                Button("Exporter") { start() }
-                    .keyboardShortcut(.defaultAction)
-                    .buttonStyle(.borderedProminent)
-                    .disabled(model.project.duration == .zero)
-            }
-            if model.project.duration == .zero {
-                Text("La timeline est vide : ajoutez au moins un clip avant d'exporter.")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
-            }
-        }
     }
 
     private func apply(_ preset: Preset) {
@@ -184,26 +234,70 @@ struct ExportSheet: View {
 
     // MARK: - Export
 
+    /// Travail d'export selon le type choisi (exécuté ici ou dans la file d'arrière-plan).
+    private func makeWork() -> (Exporter, @escaping @Sendable (Double) -> Void) async throws -> Void {
+        let project = model.project
+        let settings = self.settings
+        let kind = self.kind
+        let target = destination
+        let at = model.playhead
+        let still = ExportSettings.outputSize(project: project.settings, resolution: resolution)
+        let subtitles = withSubtitles && kind == .video ? project.subtitleCues : []
+        let start = settings.rangeStart, end = settings.rangeEnd
+        return { exporter, progress in
+            switch kind {
+            case .video:
+                try await exporter.run(project: project, settings: settings, progress: progress)
+                if !subtitles.isEmpty {
+                    let offset = start ?? .zero
+                    let shifted = subtitles.compactMap { c -> SubtitleCue? in
+                        guard c.end > offset, end.map({ c.start < $0 }) ?? true else { return nil }
+                        return SubtitleCue(start: max(.zero, c.start - offset), end: c.end - offset, text: c.text)
+                    }
+                    try Subtitles.format(shifted, as: .srt).write(to: target.deletingPathExtension().appendingPathExtension("srt"), atomically: true, encoding: .utf8)
+                }
+            case .gif:
+                try await ExtraExporters.gif(project: project, destination: target, start: start, end: end, progress: progress)
+            case .audio:
+                progress(0.1)
+                try await ExtraExporters.audio(project: project, destination: target, start: start, end: end)
+                progress(1)
+            case .still:
+                try await ExtraExporters.still(project: project, at: at, size: still, destination: target)
+                progress(1)
+            }
+        }
+    }
+
+    private func confirmOverwrite(_ target: URL) -> Bool {
+        guard FileManager.default.fileExists(atPath: target.path) else { return true }
+        let alert = NSAlert()
+        alert.messageText = "« \(target.lastPathComponent) » existe déjà"
+        alert.informativeText = "Voulez-vous le remplacer ?"
+        alert.addButton(withTitle: "Remplacer")
+        alert.addButton(withTitle: "Annuler")
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    private func startInBackground() {
+        let target = destination
+        guard confirmOverwrite(target) else { return }
+        ExportQueue.shared.add(name: target.lastPathComponent, destination: target, work: makeWork())
+        dismiss()
+    }
+
     private func start() {
         let target = destination
-        if FileManager.default.fileExists(atPath: target.path) {
-            let alert = NSAlert()
-            alert.messageText = "« \(target.lastPathComponent) » existe déjà"
-            alert.informativeText = "Voulez-vous le remplacer ?"
-            alert.addButton(withTitle: "Remplacer")
-            alert.addButton(withTitle: "Annuler")
-            guard alert.runModal() == .alertFirstButtonReturn else { return }
-        }
+        guard confirmOverwrite(target) else { return }
         model.playback.pause()
         let exporter = Exporter()
         self.exporter = exporter
-        let project = model.project
-        let settings = self.settings
+        let work = makeWork()
         phase = .exporting(0)
         requestNotificationPermission()
         task = Task {
             do {
-                try await exporter.run(project: project, settings: settings) { value in
+                try await work(exporter) { value in
                     Task { @MainActor in
                         if case .exporting = phase { phase = .exporting(value) }
                     }
@@ -229,6 +323,7 @@ struct ExportSheet: View {
                 Spacer()
                 Button("Annuler l'export") {
                     exporter?.cancel()
+                    task?.cancel()
                 }
             }
         }
