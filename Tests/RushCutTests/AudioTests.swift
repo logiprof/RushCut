@@ -17,7 +17,8 @@ enum AudioProbe {
         reader.add(output)
         reader.startReading()
         var sum = 0.0, count = 0
-        while let buffer = output.copyNextSampleBuffer(), let block = CMSampleBufferGetDataBuffer(buffer) {
+        while let buffer = output.copyNextSampleBuffer() {
+            guard let block = CMSampleBufferGetDataBuffer(buffer) else { continue }
             let length = CMBlockBufferGetDataLength(block)
             var data = [Float](repeating: 0, count: length / 4)
             _ = data.withUnsafeMutableBytes { CMBlockBufferCopyDataBytes(block, atOffset: 0, dataLength: length, destination: $0.baseAddress!) }

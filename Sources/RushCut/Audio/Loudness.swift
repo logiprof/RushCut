@@ -40,7 +40,8 @@ enum Loudness {
         let block = 19_200, hop = 4_800 // 400 ms, recouvrement de 75 %
         var squares: [Double] = []   // énergie pondérée par paquet de 100 ms (somme des canaux)
         var acc = 0.0, n = 0
-        while let buffer = output.copyNextSampleBuffer(), let data = CMSampleBufferGetDataBuffer(buffer) {
+        while let buffer = output.copyNextSampleBuffer() {
+            guard let data = CMSampleBufferGetDataBuffer(buffer) else { continue }
             let length = CMBlockBufferGetDataLength(data)
             var samples = [Float](repeating: 0, count: length / 4)
             _ = samples.withUnsafeMutableBytes { CMBlockBufferCopyDataBytes(data, atOffset: 0, dataLength: length, destination: $0.baseAddress!) }
