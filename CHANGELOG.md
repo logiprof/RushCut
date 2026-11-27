@@ -1,5 +1,22 @@
 # Journal des versions
 
+## 0.2 — Lot V1 (moteur, catalogues, audio, texte et voix)
+
+Livré :
+
+- Images clés sur la position, l'échelle, la rotation, l'opacité et le volume (losange dans l'inspecteur, navigation entre images clés, 5 courbes), repères dans la timeline ; les poignées de l'aperçu suivent les images clés.
+- Vitesse constante ×0,1 à ×100, avec ou sans conservation de la hauteur du son.
+- 62 transitions (fondus, glissements, zooms, volets, formes, flous, glitch, 3D…) avec aperçu animé au survol, durée réglable, « appliquer à tous les raccords ».
+- Plus de 130 effets originaux (lumière, flou, glitch, mouvements de caméra, rétro, distorsion, particules, cadres, tutoriel), appliqués au clip ou sur une piste d'effets qui agit sur tout ce qui est dessous.
+- 62 filtres avec intensité ; 12 ajustements de couleur et « Amélioration auto » ; masques (linéaire, miroir, cercle, rectangle) ; incrustation fond vert / bleu ; 8 modes de fusion ; coins arrondis, bordure et ombre du calque.
+- 43 animations de clip (entrée, sortie, en boucle), 22 animations de texte (machine à écrire, mot par mot, karaoké, compteur…), 50 styles de texte, 50 autocollants vectoriels.
+- Audio : volume jusqu'à +20 dB avec limiteur, réduction de bruit, atténuation automatique de la musique sous les voix (ducking), normalisation de la sonie (−14 ou −23 LUFS), vu-mètre, enregistrement de voix off, extraction du son d'une vidéo.
+- Bibliothèque de 10 musiques et 20 bruitages originaux, générés par RushCut lui-même : libres de droits, y compris pour des vidéos monétisées.
+- Sous-titres automatiques sur le Mac (framework Speech de macOS 26, 8 langues), découpage en lignes lisibles avec le minutage de chaque mot (karaoké), liste modifiable, style appliqué à tous, import et export SRT / VTT.
+- Voix de synthèse (voix de macOS) placées sous le texte, import de voix enregistrées en lot (alignées sur les textes).
+- Copier / coller les attributs d'un clip.
+
+
 ## 0.1 — Lot MVP
 
 Livré :
