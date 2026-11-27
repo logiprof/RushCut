@@ -261,18 +261,27 @@ enum FFmpegModule {
     static var binary: URL { folder.appendingPathComponent("ffmpeg") }
     static var isInstalled: Bool { FileManager.default.isExecutableFile(atPath: binary.path) }
 
-    static var downloadURL: URL {
+    /// Compilations officielles pour macOS : version stable d'abord, sinon la plus récente.
+    static var downloadURLs: [URL] {
         #if arch(arm64)
-        URL(string: "https://ffmpeg.martin-riedl.de/redirect/latest/macos/arm64/release/ffmpeg.zip")!
+        let arch = "arm64"
         #else
-        URL(string: "https://ffmpeg.martin-riedl.de/redirect/latest/macos/amd64/release/ffmpeg.zip")!
+        let arch = "amd64"
         #endif
+        return ["release", "snapshot"].compactMap { URL(string: "https://ffmpeg.martin-riedl.de/redirect/latest/macos/\(arch)/\($0)/ffmpeg.zip") }
     }
 
     static func install(progress: @escaping @Sendable (String) -> Void) async throws {
         progress("Téléchargement de FFmpeg…")
-        let (zip, response) = try await URLSession.shared.download(from: downloadURL)
-        guard (response as? HTTPURLResponse)?.statusCode ?? 200 < 400 else { throw RushError.exportFailed("téléchargement refusé par le serveur.") }
+        var downloaded: URL?
+        for url in downloadURLs {
+            if let result = try? await URLSession.shared.download(from: url),
+               ((result.1 as? HTTPURLResponse)?.statusCode ?? 200) < 400 {
+                downloaded = result.0
+                break
+            }
+        }
+        guard let zip = downloaded else { throw RushError.exportFailed("téléchargement impossible (pas de connexion, ou serveur indisponible).") }
         progress("Installation…")
         let unzipDir = folder.appendingPathComponent("tmp-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: unzipDir, withIntermediateDirectories: true)
