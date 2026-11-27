@@ -54,11 +54,14 @@ struct AudioTests {
         project.updateClip(a) { $0.audio.volumeDB = 0 }
         project.updateClip(b) { $0.audio.volumeDB = 4 }
         project.normalize(magnetic: true)
+        TapDiagnostics.reset()
         let out = try await export(project, in: dir)
+        var windows: [String] = []
+        for i in 0..<8 { windows.append(String(format: "%.3f", try await AudioProbe.rms(out, from: Double(i) * 0.5, to: Double(i + 1) * 0.5))) }
         let quiet = try await AudioProbe.rms(out, from: 0.5, to: 1.5)
         let loud = try await AudioProbe.rms(out, from: 2.5, to: 3.5)
         #expect(quiet > 0.2)
-        #expect(loud / quiet > 1.4 && loud / quiet < 1.8, "+4 dB ≈ ×1,58 (mesuré : \(loud / quiet))")
+        #expect(loud / quiet > 1.4 && loud / quiet < 1.8, "+4 dB ≈ ×1,58 (mesuré : \(loud / quiet)) ; RMS par demi-seconde : \(windows) ; appels : \(TapDiagnostics.summary)")
     }
 
     @Test func duckingLowersMusic() async throws {

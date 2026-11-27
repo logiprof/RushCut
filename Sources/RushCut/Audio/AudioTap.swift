@@ -35,6 +35,27 @@ final class AudioMeter: @unchecked Sendable {
     }
 }
 
+/// Relevé des premiers appels du traitement audio (pour les tests).
+enum TapDiagnostics {
+    nonisolated(unsafe) static var calls: [(start: Double, frames: Int, sampleRate: Double)] = []
+    private static let lock = NSLock()
+
+    static func record(start: Double, frames: Int, sampleRate: Double) {
+        lock.lock()
+        if calls.count < 400 { calls.append((start, frames, sampleRate)) }
+        lock.unlock()
+    }
+
+    static func reset() {
+        lock.lock(); calls = []; lock.unlock()
+    }
+
+    static var summary: String {
+        lock.lock(); defer { lock.unlock() }
+        return calls.prefix(12).map { String(format: "%.3f+%d@%.0f", $0.start, $0.frames, $0.sampleRate) }.joined(separator: " ")
+    }
+}
+
 /// Réglages d'un morceau lus par le fil audio (copie figée, sans accès au projet).
 struct TapSegment: Sendable {
     let start: Double
@@ -78,10 +99,22 @@ final class TapContext: @unchecked Sendable {
         guard isFloat, frames > 0 else { return }
         if abs(start - lastEnd) > 0.05 { resetState() }
         lastEnd = start + Double(frames) / sampleRate
-        let mid = start + Double(frames) / (2 * sampleRate)
-        let seg = needsProcessing ? segment(at: mid) : nil
-        let gain = seg?.extraGain(at: mid) ?? 1
-        let denoise = Float(seg?.clip.audio.denoise ?? 0)
+        TapDiagnostics.record(start: start, frames: frames, sampleRate: sampleRate)
+        // Gain et réduction de bruit calculés par blocs de 256 images (les paquets peuvent être longs).
+        let block = 256
+        let blocks = (frames + block - 1) / block
+        var gains = [Float](repeating: 1, count: blocks)
+        var denoises = [Float](repeating: 0, count: blocks)
+        if needsProcessing {
+            for b in 0..<blocks {
+                let t = start + (Double(b * block) + Double(block) / 2) / sampleRate
+                if let seg = segment(at: t) {
+                    gains[b] = seg.extraGain(at: t)
+                    denoises[b] = Float(seg.clip.audio.denoise)
+                }
+            }
+        }
+        let denoise = denoises.max() ?? 0
         var peaks: [Float] = [0, 0]
 
         func run(_ samples: UnsafeMutablePointer<Float>, count: Int, stride: Int, channel: Int) {
@@ -98,7 +131,8 @@ final class TapContext: @unchecked Sendable {
             var i = 0
             while i < count {
                 var x = samples[i * stride]
-                if denoise > 0 {
+                let gain = gains[min(i / block, blocks - 1)]
+                if denoises[min(i / block, blocks - 1)] > 0 {
                     let y = hpA * (hpY[ch] + x - hpX[ch])
                     hpX[ch] = x; hpY[ch] = y
                     x = y
