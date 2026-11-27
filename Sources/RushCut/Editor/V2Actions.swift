@@ -385,8 +385,9 @@ extension EditorModel {
             apply("Ajouter le logo") { p in
                 created = p.addMedia(id, at: .zero, target: .newTrack)
                 if let created {
+                    let total = max(RTime(seconds: 1), p.duration)
                     p.updateClip(created) { c in
-                        c.duration = max(RTime(seconds: 1), p.duration)
+                        c.duration = total
                         c.fit = .fit
                         c.transform.scale = 0.16
                         c.transform.positionX = 0.4
