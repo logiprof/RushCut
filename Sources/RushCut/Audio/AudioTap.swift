@@ -46,13 +46,22 @@ enum TapDiagnostics {
         lock.unlock()
     }
 
+    nonisolated(unsafe) static var errors: [OSStatus] = []
+
+    static func recordError(_ status: OSStatus) {
+        lock.lock()
+        if errors.count < 50 { errors.append(status) }
+        lock.unlock()
+    }
+
     static func reset() {
-        lock.lock(); calls = []; lock.unlock()
+        lock.lock(); calls = []; errors = []; lock.unlock()
     }
 
     static var summary: String {
         lock.lock(); defer { lock.unlock() }
-        return calls.prefix(12).map { String(format: "%.3f+%d@%.0f", $0.start, $0.frames, $0.sampleRate) }.joined(separator: " ")
+        let list = calls.map { String(format: "%.3f+%d", $0.start, $0.frames) }
+        return "\(calls.count) appels, premiers : \(list.prefix(4).joined(separator: " ")), derniers : \(list.suffix(6).joined(separator: " ")) ; erreurs : \(errors.prefix(5))"
     }
 }
 
@@ -208,7 +217,15 @@ enum AudioTap {
             process: { tap, numberFrames, _, bufferList, numberFramesOut, flagsOut in
                 var range = CMTimeRange()
                 let status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferList, flagsOut, &range, numberFramesOut)
-                guard status == noErr else { return }
+                guard status == noErr else {
+                    // Pas de son source (zone vide de la piste) : on rend du silence plutôt que d'interrompre la piste.
+                    TapDiagnostics.recordError(status)
+                    for buffer in UnsafeMutableAudioBufferListPointer(bufferList) {
+                        if let data = buffer.mData { memset(data, 0, Int(buffer.mDataByteSize)) }
+                    }
+                    numberFramesOut.pointee = numberFrames
+                    return
+                }
                 let ctx = Unmanaged<TapContext>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
                 let start = range.start.isNumeric ? range.start.seconds : ctx.lastEnd
                 ctx.process(UnsafeMutableAudioBufferListPointer(bufferList), frames: Int(numberFramesOut.pointee), start: start)

@@ -60,6 +60,7 @@ struct AudioTests {
         for i in 0..<8 { windows.append(String(format: "%.3f", try await AudioProbe.rms(out, from: Double(i) * 0.5, to: Double(i + 1) * 0.5))) }
         let quiet = try await AudioProbe.rms(out, from: 0.5, to: 1.5)
         let loud = try await AudioProbe.rms(out, from: 2.5, to: 3.5)
+        #expect(project.trackIndex(of: a) == project.trackIndex(of: b), "pistes : \(project.tracks.map { $0.clips.map { ($0.start.seconds, $0.duration.seconds) } })")
         #expect(quiet > 0.2)
         #expect(loud / quiet > 1.4 && loud / quiet < 1.8, "+4 dB ≈ ×1,58 (mesuré : \(loud / quiet)) ; RMS par demi-seconde : \(windows) ; appels : \(TapDiagnostics.summary)")
     }
