@@ -32,6 +32,7 @@ struct LibraryPanel: View {
             case .media: mediaTab
             case .audio: AudioLibrary(model: model)
             case .text: TextStylesLibrary(model: model)
+            case .captions: SubtitlesLibrary(model: model)
             case .stickers: StickersLibrary(model: model)
             case .effects: EffectsLibrary(model: model)
             case .transitions: TransitionsLibrary(model: model)

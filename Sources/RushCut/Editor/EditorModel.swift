@@ -4,13 +4,14 @@ import AVFoundation
 import UniformTypeIdentifiers
 
 enum LibraryTab: String, CaseIterable, Identifiable {
-    case media, audio, text, stickers, effects, transitions, filters
+    case media, audio, text, captions, stickers, effects, transitions, filters
     var id: String { rawValue }
     var label: String {
         switch self {
         case .media: return "Médias"
         case .audio: return "Audio"
         case .text: return "Texte"
+        case .captions: return "Sous-titres"
         case .stickers: return "Autocollants"
         case .effects: return "Effets"
         case .transitions: return "Transitions"
@@ -22,6 +23,7 @@ enum LibraryTab: String, CaseIterable, Identifiable {
         case .media: return "photo.on.rectangle"
         case .audio: return "music.note"
         case .text: return "textformat"
+        case .captions: return "captions.bubble"
         case .stickers: return "face.smiling"
         case .effects: return "sparkles"
         case .transitions: return "square.split.2x1"
@@ -49,6 +51,8 @@ final class EditorModel: ObservableObject {
     @Published var importInProgress = false
     @Published var inspectorTab: InspectorTab = .base
     var attributeClipboard: Clip?
+    @Published var subtitleStatus: String?
+    @Published var subtitleBusy = false
     @Published var timelineVisibleWidth: CGFloat = 800
 
     let playback = PlaybackController()

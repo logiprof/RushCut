@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import AVFoundation
 
 /// Inspecteur : réglages de l'élément sélectionné, ou du projet si rien n'est sélectionné.
 struct InspectorPanel: View {
@@ -329,6 +330,14 @@ struct TextInspector: View {
         }
     }
 
+    private func speakText() {
+        let stored = UserDefaults.standard.string(forKey: "voix.identifiant") ?? ""
+        let voice: String? = stored.isEmpty ? nil : stored
+        let defaultRate = Double(AVSpeechUtteranceDefaultSpeechRate)
+        let rate: Double = UserDefaults.standard.object(forKey: "voix.debit") as? Double ?? defaultRate
+        model.speak(clip.id, voiceID: voice, rate: Float(rate))
+    }
+
     private func color(_ keyPath: WritableKeyPath<TextContent, RGBA>, _ name: String) -> Binding<CGColor> {
         Binding(get: { text[keyPath: keyPath].cgColor },
                 set: { c in update(name, name) { $0[keyPath: keyPath] = RGBA(cgColor: c) } })
@@ -382,6 +391,19 @@ struct TextInspector: View {
             SliderField(title: "Interligne", value: text.lineSpacing * 100, range: 0...100, unit: "%") { v in
                 update("Interligne", "interligne") { $0.lineSpacing = v / 100 }
             }
+        }
+        if text.isSubtitle {
+            InspectorSection(title: "Sous-titre") {
+                Button("Appliquer ce style et cette position à tous les sous-titres") { model.applyStyleToAllSubtitles(from: clip) }
+                    .controlSize(.small)
+                Button("Ouvrir la liste des sous-titres") { model.libraryTab = .captions }
+                    .controlSize(.small)
+            }
+        }
+        InspectorSection(title: "Voix") {
+            Button("Lire ce texte avec une voix de synthèse") { speakText() }
+                .controlSize(.small)
+                .disabled(model.subtitleBusy)
         }
         InspectorSection(title: "Style du texte") {
             Toggle("Contour", isOn: Binding(get: { text.strokeEnabled }, set: { v in update("Contour", "contour") { $0.strokeEnabled = v } }))
