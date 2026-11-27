@@ -208,6 +208,19 @@ final class RushCompositor: NSObject, AVVideoCompositing {
         var ctx = effectContext(for: clip, local: local, renderSize: renderSize, frameIndex: frameIndex)
         ctx.canvas = image.extent.size
 
+        // Détourage, effets sur le corps et retouche du visage (Vision).
+        if !isGraphic {
+            let needsMask = clip.cutout != nil || clip.effects.contains { EffectCatalog.byID[$0.type]?.needsSegmentation == true }
+            if needsMask {
+                let key = "\(clip.id)-\(frameIndex)-\(Int(image.extent.width))"
+                ctx.personMask = Segmenter.mask(for: image, mode: clip.cutout ?? .personne, key: key, accurate: renderSize.width >= 1200)
+            }
+            if !clip.retouch.isOff {
+                let faces = Segmenter.faces(in: image, key: "\(clip.id)-\(frameIndex / 4)-\(Int(image.extent.width))")
+                image = Segmenter.retouch(image, retouch: clip.retouch, faces: faces)
+            }
+        }
+
         // Traitements de l'image source.
         if !isGraphic {
             if let chroma = clip.chroma { image = ChromaKeyer.apply(chroma, to: image) }
@@ -216,6 +229,7 @@ final class RushCompositor: NSObject, AVVideoCompositing {
         }
         if !clip.effects.isEmpty { image = EffectCatalog.apply(clip.effects, to: image, context: ctx) }
         if !isGraphic {
+            if clip.cutout != nil, let m = ctx.personMask { image = Segmenter.cutout(image, mask: m) }
             if let mask = clip.mask { image = MaskRenderer.apply(mask, to: image) }
             image = applyCrop(image, crop: clip.crop)
         }

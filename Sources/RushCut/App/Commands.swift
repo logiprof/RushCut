@@ -87,6 +87,24 @@ struct RushCommands: Commands {
                 .disabled(editor == nil)
             Button("Supprimer (⌫)") { editor?.deleteSelection() }
                 .disabled(editor == nil)
+            Divider()
+            Button("Grouper") { editor?.groupSelection() }
+                .keyboardShortcut("g")
+                .disabled((editor?.selection.count ?? 0) < 2)
+            Button("Dissocier") { editor?.ungroupSelection() }
+                .keyboardShortcut("g", modifiers: [.command, .shift])
+                .disabled(editor?.selection.isEmpty ?? true)
+            Button("Créer un clip composé") { editor?.makeCompound() }
+                .disabled((editor?.selection.count ?? 0) < 2)
+            Button("Décomposer le clip composé") { if let id = editor?.singleSelection?.id { editor?.breakCompound(id) } }
+                .disabled(editor?.singleSelection?.compoundSource == nil)
+            Divider()
+            Button("Copier les attributs") { editor?.copyAttributes() }
+                .keyboardShortcut("c", modifiers: [.command, .option])
+                .disabled(editor?.singleSelection == nil)
+            Button("Coller les attributs") { editor?.pasteAttributes() }
+                .keyboardShortcut("v", modifiers: [.command, .option])
+                .disabled(editor?.attributeClipboard == nil)
         }
         CommandMenu("Outils") {
             Button("Supprimer les silences du clip") { if let id = editor?.singleSelection?.id { editor?.removeSilences(id) } }
@@ -101,6 +119,14 @@ struct RushCommands: Commands {
                 .disabled(editor?.singleSelection == nil)
             Divider()
             Button("Enregistrer l'écran…") { editor?.screenRecordingPresented = true }
+                .disabled(editor == nil)
+            Button("Enregistrer avec la caméra…") { editor?.webcamPresented = true }
+                .disabled(editor == nil)
+            Button("Assistant de rédaction (Apple Intelligence)…") { editor?.assistantPresented = true }
+                .disabled(editor == nil)
+            Button("Importer un LUT (.cube)…") { editor?.importLUTPanel() }
+                .disabled(editor == nil)
+            Button("Enregistrer comme modèle…") { editor?.templatePresented = true }
                 .disabled(editor == nil)
             Toggle("Utiliser des proxys pour l'aperçu (vidéos 4K)", isOn: Binding(get: { editor?.useProxies ?? false }, set: { editor?.setUseProxies($0) }))
                 .disabled(editor == nil)

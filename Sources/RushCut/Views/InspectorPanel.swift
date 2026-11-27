@@ -132,11 +132,12 @@ struct ClipInspector: View {
         if clip.isEffectOnly { return clip.effects.isEmpty && clip.filter != nil ? [.ajuster] : [.effets] }
         if clip.isText { return [.texte, .base, .animation, .effets, .incrustation] }
         if clip.isSticker { return [.base, .animation, .effets, .incrustation] }
-        if onAudioTrack || media?.kind == .audio { return [.audio, .vitesse] }
+        if onAudioTrack || media?.kind == .audio { return [.audio, .vitesse, .auto] }
         var list: [InspectorTab] = [.base, .animation]
         if media?.kind == .video { list.append(.vitesse) }
         list += [.ajuster, .masque, .effets, .incrustation]
         if hasAudio { list.append(.audio) }
+        list.append(.auto)
         return list
     }
 
@@ -158,6 +159,7 @@ struct ClipInspector: View {
         case .effets: EffectsTab(model: model, clip: clip)
         case .incrustation: OverlayTab(model: model, clip: clip)
         case .audio: audioTab
+        case .auto: SmartTab(model: model, clip: clip)
         }
         InspectorSection(title: "Attributs") {
             HStack {
@@ -248,6 +250,16 @@ struct ClipInspector: View {
             Button { model.removeSilences(clip.id) } label: { Label("Supprimer les silences", systemImage: "waveform.path.badge.minus") }
                 .controlSize(.small)
                 .disabled(model.toolStatus != nil)
+        }
+        InspectorSection(title: "Effet de voix") {
+            Picker("Effet", selection: Binding(get: { clip.audio.voiceEffect ?? "" }, set: { v in
+                update("Effet de voix", "voix") { $0.audio.voiceEffect = v.isEmpty ? nil : v }
+            })) {
+                Text("Aucun").tag("")
+                ForEach(VoiceEffects.all) { Text($0.name).tag($0.id) }
+            }
+            Text("Le son traité est préparé en arrière-plan ; l'aperçu se met à jour au bout d'un instant.")
+                .font(.caption).foregroundStyle(.secondary)
         }
         InspectorSection(title: "Nettoyage et mixage") {
             SliderField(title: "Réduction de bruit", value: clip.audio.denoise * 100, range: 0...100, unit: "%") { v in

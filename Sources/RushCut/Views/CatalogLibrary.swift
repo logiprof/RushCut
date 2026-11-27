@@ -44,7 +44,7 @@ struct EffectsLibrary: View {
                 LazyVGrid(columns: tileColumns, spacing: 10) {
                     ForEach(items) { def in
                         CatalogTile(key: "effet-\(def.id)", title: def.name,
-                                    badge: def.needsSegmentation ? "V2" : nil,
+                                    badge: def.needsSegmentation ? "Sujet" : nil,
                                     animatedFrames: 16,
                                     make: { f, n, base in CatalogThumbnails.effect(def, frame: f, frames: n, base: base) },
                                     action: { model.useEffect(def) })
@@ -132,6 +132,7 @@ struct FiltersLibrary: View {
     private var categories: [String] {
         var seen: [String] = []
         for f in FilterCatalog.all where !seen.contains(f.category) { seen.append(f.category) }
+        seen.append("Mes LUT")
         return seen
     }
 
@@ -144,11 +145,29 @@ struct FiltersLibrary: View {
                        ? "Clic : ajoute le filtre sur une piste d'effets."
                        : "Clic : applique le filtre au clip sélectionné.")
             ScrollView {
+                if current == "Mes LUT" {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Button("Importer un LUT (.cube)…") { model.importLUTPanel() }
+                            .controlSize(.small)
+                        Text("Les LUT 3D au format .cube (étalonnage de caméra, looks de cinéma) s'appliquent comme un filtre, avec intensité réglable.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 10)
+                }
                 LazyVGrid(columns: tileColumns, spacing: 10) {
-                    ForEach(FilterCatalog.all.filter { $0.category == current }) { def in
-                        CatalogTile(key: "filtre-\(def.id)", title: def.name, isSelected: selectedFilter == def.id,
-                                    make: { _, _, base in FilterCatalog.render(def.recipe, base, frame: 0) },
-                                    action: { model.useFilter(def) })
+                    if current == "Mes LUT" {
+                        ForEach(LUTLibrary.installed, id: \.self) { name in
+                            CatalogTile(key: "lut-\(name)", title: (name as NSString).deletingPathExtension,
+                                        isSelected: selectedFilter == LUTLibrary.prefix + name,
+                                        make: { _, _, base in LUTLibrary.apply(name: name, to: base, intensity: 1) },
+                                        action: { model.useLUT(name) })
+                        }
+                    } else {
+                        ForEach(FilterCatalog.all.filter { $0.category == current }) { def in
+                            CatalogTile(key: "filtre-\(def.id)", title: def.name, isSelected: selectedFilter == def.id,
+                                        make: { _, _, base in FilterCatalog.render(def.recipe, base, frame: 0) },
+                                        action: { model.useFilter(def) })
+                        }
                     }
                 }
                 .padding(10)
@@ -247,6 +266,9 @@ struct TextStylesLibrary: View {
                     }
                 }
                 .padding(10)
+                BrandKitSection(model: model)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 10)
             }
         }
         .padding(.top, 8)

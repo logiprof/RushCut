@@ -629,6 +629,14 @@ struct Clip: Codable, Hashable, Identifiable, Sendable {
     /// Autocollant dessiné (identifiant du catalogue).
     var sticker: String? = nil
     var stickerColor: RGBA = RGBA(r: 1, g: 0.85, b: 0.1)
+    /// Détourage automatique (lot V2).
+    var cutout: CutoutMode? = nil
+    /// Retouche du visage (lot V2).
+    var retouch: Retouch = Retouch()
+    /// Groupe de clips qui se déplacent ensemble (lot V2).
+    var groupID: UUID? = nil
+    /// Clip composé : projet d'origine conservé pour pouvoir le décomposer (JSON).
+    var compoundSource: Data? = nil
 
     var end: RTime { start + duration }
     var isSticker: Bool { sticker != nil }
@@ -670,6 +678,31 @@ extension Clip {
         animLoop = c.value(.animLoop, nil)
         sticker = c.value(.sticker, nil)
         stickerColor = c.value(.stickerColor, RGBA(r: 1, g: 0.85, b: 0.1))
+        cutout = c.value(.cutout, nil)
+        retouch = c.value(.retouch, Retouch())
+        groupID = c.value(.groupID, nil)
+        compoundSource = c.value(.compoundSource, nil)
+    }
+}
+
+enum CutoutMode: String, Codable, CaseIterable, Sendable {
+    case personne, sujet
+    var label: String { self == .personne ? "Personnes" : "Sujet principal" }
+}
+
+struct Retouch: Codable, Hashable, Sendable {
+    /// Lissage de la peau (0–1).
+    var smooth: Double = 0
+    /// Éclat du visage (0–1).
+    var brighten: Double = 0
+    var isOff: Bool { smooth == 0 && brighten == 0 }
+}
+
+extension Retouch {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        smooth = c.value(.smooth, 0)
+        brighten = c.value(.brighten, 0)
     }
 }
 

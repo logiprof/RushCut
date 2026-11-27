@@ -70,6 +70,9 @@ struct EditorView: View {
         .sheet(isPresented: $model.versionsPresented) { VersionsSheet(model: model) }
         .sheet(isPresented: $model.ffmpegPresented) { FFmpegSheet(model: model) }
         .sheet(isPresented: $model.screenRecordingPresented) { ScreenRecordSheet(model: model) }
+        .sheet(isPresented: $model.webcamPresented) { WebcamSheet(model: model) }
+        .sheet(isPresented: $model.assistantPresented) { AssistantSheet(model: model) }
+        .sheet(isPresented: $model.templatePresented) { SaveTemplateSheet(model: model) }
     }
 
     private var statusText: String {

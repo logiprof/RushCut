@@ -72,6 +72,9 @@ final class EditorModel: ObservableObject {
     @Published var ffmpegPresented = false
     @Published var versionsPresented = false
     @Published var screenRecordingPresented = false
+    @Published var webcamPresented = false
+    @Published var assistantPresented = false
+    @Published var templatePresented = false
     private var proxiesLoaded = UserDefaults.standard.bool(forKey: "proxys")
     @Published var timelineVisibleWidth: CGFloat = 800
 
@@ -232,10 +235,11 @@ final class EditorModel: ObservableObject {
     }
 
     func select(_ id: UUID, extend: Bool) {
+        let members = groupMembers(of: id)
         if extend {
-            if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
+            if selection.contains(id) { selection.subtract(members) } else { selection.formUnion(members) }
         } else {
-            selection = [id]
+            selection = members
         }
     }
 
@@ -334,7 +338,17 @@ final class EditorModel: ObservableObject {
     }
 
     func move(_ id: UUID, to start: RTime, target: TrackTarget) {
-        apply("Déplacer") { $0.move(id, to: start, target: target) }
+        let others = groupMembers(of: id).subtracting([id])
+        guard let original = project.clip(id) else { return }
+        let delta = start - original.start
+        apply("Déplacer") { p in
+            p.move(id, to: start, target: target)
+            // Les autres clips du groupe suivent, chacun sur sa piste.
+            for other in others {
+                guard let c = p.clip(other), let ti = p.trackIndex(of: other), !p.tracks[ti].isMain else { continue }
+                p.move(other, to: max(.zero, c.start + delta), target: .existing(ti))
+            }
+        }
     }
 
     func trim(_ id: UUID, edge: TrimEdge, to time: RTime) {

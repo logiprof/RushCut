@@ -15,6 +15,8 @@ struct EffectContext {
     var canvas: CGSize
     /// Zone visée (fractions du cadre, origine en haut à gauche) pour les effets localisés.
     var region: CGRect = CGRect(x: 0.3, y: 0.3, width: 0.4, height: 0.4)
+    /// Masque de la personne (effets sur le corps), calculé par le compositeur quand un effet en a besoin.
+    var personMask: CIImage? = nil
 
     func param(_ key: String, _ fallback: Double) -> Double { params[key] ?? fallback }
 }
@@ -309,6 +311,7 @@ enum EffectCatalog {
         list.append(contentsOf: Stylize.effects())
         // MARK: Saisonniers et fêtes (lot V2, 15)
         list.append(contentsOf: Seasonal.effects())
+        list.append(contentsOf: BodyEffects.effects())
         return list
     }
 }

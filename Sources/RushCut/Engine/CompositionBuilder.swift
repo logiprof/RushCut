@@ -74,7 +74,19 @@ enum CompositionBuilder {
                 return nil
             }
             let placed = RTime(ticks: Int64(Double(sourceLength.ticks) / rate))
-            if abs(rate - 1) > 0.0001 {
+            if !clip.speed.curve.isEmpty {
+                // Courbe de vitesse : la source est découpée en segments réguliers, chacun étiré à sa durée.
+                let weights = SpeedCurves.segmentWeights(clip.speed.curve)
+                let segment = RTime(ticks: sourceLength.ticks / Int64(weights.count))
+                var cursor = clip.start
+                for (i, w) in weights.enumerated() {
+                    let src = i == weights.count - 1 ? sourceLength - segment * Double(weights.count - 1) : segment
+                    let dur = i == weights.count - 1 ? (clip.start + placed) - cursor : RTime(seconds: placed.seconds * w)
+                    guard src > .zero, dur > .zero else { continue }
+                    track.scaleTimeRange(CMTimeRange(start: cursor.cmTime, duration: src.cmTime), toDuration: dur.cmTime)
+                    cursor = cursor + dur
+                }
+            } else if abs(rate - 1) > 0.0001 {
                 track.scaleTimeRange(CMTimeRange(start: clip.start.cmTime, duration: sourceLength.cmTime), toDuration: placed.cmTime)
             }
             return placed

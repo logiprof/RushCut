@@ -56,6 +56,7 @@ struct SubtitlesLibrary: View {
                         .controlSize(.small)
                     }
                 }
+                TranslateSubtitlesSection(model: model)
                 InspectorSection(title: "Voix de synthèse") {
                     Picker("Voix", selection: $voiceID) {
                         Text("Voix française par défaut").tag("")

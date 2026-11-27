@@ -34,6 +34,9 @@ enum FilterCatalog {
     static var categories: [String] { var seen: [String] = []; for f in all where !seen.contains(f.category) { seen.append(f.category) }; return seen }
 
     static func apply(_ ref: FilterRef, to image: CIImage, frame: Int) -> CIImage {
+        if ref.id.hasPrefix(LUTLibrary.prefix) {
+            return LUTLibrary.apply(name: String(ref.id.dropFirst(LUTLibrary.prefix.count)), to: image, intensity: ref.intensity)
+        }
         guard let def = byID[ref.id] else { return image }
         return CI.mix(image, render(def.recipe, image, frame: frame), amount: ref.intensity)
     }

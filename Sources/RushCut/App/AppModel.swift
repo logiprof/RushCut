@@ -34,6 +34,20 @@ final class AppModel: ObservableObject {
         }
     }
 
+    /// Nouveau projet à partir d'un modèle enregistré.
+    func createProject(name: String, template: URL) {
+        do {
+            let model = try TemplateLibrary.project(from: template, name: name)
+            let (_, url) = try ProjectStore.createProject(name: name, settings: model.settings)
+            var p = model
+            p.name = name
+            try ProjectStore.save(p, to: url)
+            open(url)
+        } catch {
+            show(error, title: "Création impossible")
+        }
+    }
+
     func open(_ url: URL) {
         // Ouvrir un projet répond à la question de récupération.
         recoveryURL = nil

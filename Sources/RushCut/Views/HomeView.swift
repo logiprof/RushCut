@@ -152,6 +152,8 @@ struct NewProjectSheet: View {
     @State private var frameRate = 30
     @State private var customWidth = 1920
     @State private var customHeight = 1080
+    @State private var template: URL?
+    private let templates = TemplateLibrary.all
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -194,6 +196,17 @@ struct NewProjectSheet: View {
                 ForEach(ProjectSettings.supportedFrameRates, id: \.self) { Text("\($0) i/s").tag($0) }
             }
             .frame(width: 280)
+            if !templates.isEmpty {
+                Picker("Partir d'un modèle", selection: $template) {
+                    Text("Aucun (projet vide)").tag(URL?.none)
+                    ForEach(templates) { Text($0.name).tag(URL?.some($0.url)) }
+                }
+                .frame(width: 380)
+                if template != nil {
+                    Text("Le format et la fréquence d'images du modèle sont repris. Remplacez ensuite ses médias avec « Remplacer le clip ».")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
 
             HStack {
                 Spacer()
@@ -206,7 +219,8 @@ struct NewProjectSheet: View {
                     settings.height = max(16, min(8192, h / 2 * 2))
                     settings.frameRate = frameRate
                     dismiss()
-                    app.createProject(name: name, settings: settings)
+                    if let template { app.createProject(name: name, template: template) }
+                    else { app.createProject(name: name, settings: settings) }
                 }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.borderedProminent)

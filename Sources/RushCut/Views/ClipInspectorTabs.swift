@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 enum InspectorTab: String, CaseIterable, Identifiable {
-    case texte, base, animation, vitesse, ajuster, masque, effets, incrustation, audio
+    case texte, base, animation, vitesse, ajuster, masque, effets, incrustation, audio, auto
     var id: String { rawValue }
 
     var label: String {
@@ -16,6 +16,7 @@ enum InspectorTab: String, CaseIterable, Identifiable {
         case .effets: return "Effets"
         case .incrustation: return "Incrustation"
         case .audio: return "Audio"
+        case .auto: return "Auto"
         }
     }
 
@@ -30,6 +31,7 @@ enum InspectorTab: String, CaseIterable, Identifiable {
         case .effets: return "sparkles"
         case .incrustation: return "square.on.square"
         case .audio: return "speaker.wave.2"
+        case .auto: return "wand.and.stars"
         }
     }
 }
@@ -259,6 +261,9 @@ struct SpeedTab: View {
             Text("De ×0,1 (ralenti) à ×100 (accéléré). Les images clés suivent la nouvelle durée.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+        }
+        if model.project.media(clip.mediaID)?.kind == .video {
+            SpeedCurveSection(model: model, clip: clip)
         }
     }
 }

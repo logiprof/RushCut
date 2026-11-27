@@ -240,7 +240,7 @@ extension Project {
         clampFades(&tracks[loc.track].clips[loc.clip])
     }
 
-    private func clampFades(_ clip: inout Clip) {
+    func clampFades(_ clip: inout Clip) {
         if clip.audio.fadeIn < .zero { clip.audio.fadeIn = .zero }
         if clip.audio.fadeOut < .zero { clip.audio.fadeOut = .zero }
         if clip.audio.fadeIn > clip.duration { clip.audio.fadeIn = clip.duration }
@@ -310,6 +310,11 @@ extension Project {
                 right.shiftKeyframes(by: offset)
                 right.transitionIn = nil
                 right.animIn = nil
+                // Une courbe de vitesse ne se coupe pas : chaque moitié garde la vitesse moyenne.
+                left.speed.curve = []
+                right.speed.curve = []
+                left.speed.curveName = nil
+                right.speed.curveName = nil
                 left.animOut = nil
                 right.linkedClipIDs = c.linkedClipIDs.compactMap { rightIDs[$0] }
                 left.linkedClipIDs = c.linkedClipIDs.filter { rightIDs[$0] != nil || clip($0) != nil }
@@ -332,6 +337,8 @@ extension Project {
         let minimum = RTime.frame(fps: fps)
         let track = tracks[loc.track]
         var c = track.clips[loc.clip]
+        c.speed.curve = []
+        c.speed.curveName = nil
         let others = track.clips.filter { $0.id != id }
         let t = time.snapped(fps: fps)
         switch edge {
@@ -540,6 +547,8 @@ extension Project {
         updateClip(id) { c in
             let newRate = min(100, max(0.1, rate))
             let oldRate = max(0.01, c.speed.rate)
+            c.speed.curve = []
+            c.speed.curveName = nil
             let source = c.sourceLength
             c.speed.rate = newRate
             c.duration = max(RTime.frame(fps: fps), RTime(ticks: Int64(Double(source.ticks) / newRate)).snapped(fps: fps))
