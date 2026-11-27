@@ -43,9 +43,13 @@ jobs:
       - name: Vérifier le lien de téléchargement de FFmpeg
         continue-on-error: true
         run: |
+          curl -sL https://ffmpeg.martin-riedl.de/ | grep -oE 'href="[^"]*(macos|download|redirect)[^"]*"' | sort -u | head -40 || true
           for arch in arm64 amd64; do
-            curl -sIL -o /dev/null -w "$arch : %{http_code} %{url_effective}\n" "https://ffmpeg.martin-riedl.de/redirect/latest/macos/$arch/release/ffmpeg.zip" || true
+            for kind in release snapshot; do
+              curl -sIL -o /dev/null -w "$arch $kind : %{http_code} %{url_effective}\n" "https://ffmpeg.martin-riedl.de/redirect/latest/macos/$arch/$kind/ffmpeg.zip" || true
+            done
           done
+          curl -sIL -o /dev/null -w "evermeet : %{http_code} %{url_effective}\n" https://evermeet.cx/ffmpeg/getrelease/zip || true
 
       - name: Créer l'application
         run: |
