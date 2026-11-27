@@ -17,6 +17,9 @@ struct PlayerPanel: View {
                     Color.black.opacity(0.92)
                     ZStack {
                         PlayerLayerView(player: playback.player)
+                        if let still = model.stillFrame {
+                            Image(nsImage: NSImage(cgImage: still, size: .zero)).resizable()
+                        }
                         TransformOverlay(model: model, playback: playback, canvas: canvas, viewSize: fitted)
                     }
                     .frame(width: fitted.width, height: fitted.height)

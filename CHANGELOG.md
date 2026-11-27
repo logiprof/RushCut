@@ -1,5 +1,36 @@
 # Journal des versions
 
+## 0.2 — Lot V2 (intelligence sur le Mac)
+
+Livré :
+
+- Détourage automatique sans fond vert (personnes ou sujet principal, framework Vision) et 10 effets sur le corps (contour néon, halo, fond flou, fond noir et blanc, projecteur, clones, ombre portée…).
+- Retouche du visage : lissage de la peau et éclat, limités aux visages détectés.
+- Recadrage automatique sur le sujet et passage du projet en 9:16 en un clic.
+- Courbes de vitesse (8 préréglages : Montage, Héros, Balle, Saut, Flash…, et courbe modifiable à la souris).
+- Ralenti fluide (images intermédiaires par fondu), stabilisation (suivi du tremblement image par image), découpage aux changements de plan, repérage des temps de la musique (marqueurs).
+- Suppression des « euh » et « hum », montage par le texte (on barre les mots, la vidéo se recolle).
+- Import de LUT 3D (.cube), effets de voix (robot, hélium, monstre, écho, radio, téléphone, mégaphone, grotte, voix doublée).
+- Traduction des sous-titres sur le Mac (framework Translation).
+- Groupes de clips (⌘G), clips composés (et décomposition), modèles de projet, charte graphique (couleurs, polices, logo).
+- Enregistrement avec la caméra ; assistant de rédaction avec Apple Intelligence (titres, description, hashtags, résumé, texte raccourci).
+
+Limites assumées :
+
+- Le ralenti fluide mélange les images voisines ; il n'invente pas de mouvement (pas de flux optique).
+- La séparation des pistes d'une musique (voix / instruments) et l'agrandissement par IA (super-résolution) ne sont pas inclus : aucun outil fiable n'existe sur le Mac sans modèle externe lourd.
+- L'assistant écrit du texte uniquement ; il ne génère ni images ni vidéos. Il nécessite Apple Intelligence activé.
+- Le module de conversion (FFmpeg) se télécharge à la demande (une fois) plutôt que d'être livré avec l'application.
+
+## 0.2 — Lot V1 (outils)
+
+Livré :
+
+- Supprimer les silences, image figée, lecture à l'envers, remplacer un clip en gardant ses réglages, suivi de mouvement (un texte ou un autocollant suit un objet de la vidéo), zoom sur une zone.
+- Proxys pour l'aperçu des vidéos 4K, enregistrement de l'écran (ScreenCaptureKit), conversion des formats WebM, MKV, AVI, FLV, WMV, OGG, Opus… avec le module FFmpeg.
+- Export : GIF animé, son seul (.m4a), image fixe (.png), plage entre points d'entrée et de sortie (I / O / X), fichier de sous-titres .srt à côté de la vidéo, file d'exports en arrière-plan avec notification.
+- Historique des versions (20 copies automatiques, restauration annulable), rassembler les médias dans le dossier du projet.
+
 ## 0.2 — Lot V1 (moteur, catalogues, audio, texte et voix)
 
 Livré :

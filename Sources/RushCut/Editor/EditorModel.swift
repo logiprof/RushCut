@@ -75,6 +75,8 @@ final class EditorModel: ObservableObject {
     @Published var webcamPresented = false
     @Published var assistantPresented = false
     @Published var templatePresented = false
+    /// Image fixe affichée à la place de la vidéo (captures d'écran automatiques).
+    @Published var stillFrame: CGImage?
     private var proxiesLoaded = UserDefaults.standard.bool(forKey: "proxys")
     @Published var timelineVisibleWidth: CGFloat = 800
 

@@ -79,7 +79,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          NOTES="Version $VERSION de RushCut (lot MVP). Téléchargez RushCut.zip, ouvrez-le, puis glissez RushCut dans Applications. Voir le README pour la première ouverture."
+          NOTES="Version $VERSION de RushCut (lots MVP, V1 et V2). Téléchargez RushCut.zip, ouvrez-le, puis glissez RushCut dans Applications. Voir le README pour la première ouverture et le journal des versions (CHANGELOG.md) pour le détail."
           gh release create "v$VERSION" dist/RushCut.zip --title "RushCut $VERSION" --notes "$NOTES" --latest
 
       - name: Conserver les journaux en cas d'échec

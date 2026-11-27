@@ -48,6 +48,17 @@ date -u +%T > "$OUT/2-montage-info.txt"
 open -n -a "$APP" "$HOME/Movies/RushCut/Démo RushCut.rushcut" --args --capture "$OUT/2-montage-app.png"
 capture 2-montage
 
+# Visite de toute l'interface : chaque onglet et chaque fenêtre (l'application se ferme à la fin).
+rm -f "$HOME/Library/Application Support/RushCut/session.json"
+mkdir -p "$OUT/interface"
+open -n -a "$APP" "$HOME/Movies/RushCut/Démo RushCut.rushcut" --args --tour "$OUT/interface"
+for i in $(seq 1 90); do
+  sleep 2
+  pgrep -x RushCut >/dev/null || break
+done
+pkill -x RushCut 2>/dev/null || true
+ls "$OUT/interface" > "$OUT/interface.txt" 2>&1 || true
+
 # Export réel depuis l'application n'est pas automatisable ici ; on vérifie l'aperçu à 5 s via une 3e capture.
 rm -f "$HOME/Library/Application Support/RushCut/session.json"
 
