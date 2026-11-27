@@ -102,7 +102,7 @@ enum Subtitles {
                   let end = parseTime(sides[1].split(separator: " ").first.map(String.init) ?? sides[1]) else { continue }
             let text = lines[(timeIndex + 1)...].joined(separator: "\n")
                 .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-                .replacingOccurrences(of: "{\\\\[^}]*}", with: "", options: .regularExpression)
+                .replacingOccurrences(of: #"\{[^}]*\}"#, with: "", options: .regularExpression)
             guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, end > start else { continue }
             cues.append(SubtitleCue(start: start, end: end, text: text))
         }
