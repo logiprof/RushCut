@@ -39,7 +39,11 @@ struct V2Tests {
     @Test func voiceEffectsStayFinite() {
         for effect in VoiceEffects.all {
             var fx = VoiceFX(id: effect.id)
-            var samples = (0..<9600).map { i in Float(sin(Double(i) * 2 * .pi * 220 / 48_000) * 0.5) }
+            var samples = [Float](repeating: 0, count: 9600)
+            for i in 0..<9600 {
+                let phase: Double = Double(i) * 2 * Double.pi * 220 / 48_000
+                samples[i] = Float(sin(phase) * 0.5)
+            }
             samples.withUnsafeMutableBufferPointer { fx.process($0.baseAddress!, frames: 4800) }
             #expect(samples.allSatisfy { $0.isFinite && abs($0) <= 1 }, "\(effect.id)")
             #expect(samples.suffix(2000).contains { abs($0) > 0.01 }, "\(effect.id) produit du son")
