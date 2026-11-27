@@ -168,6 +168,27 @@ struct FlowLayout: Layout {
     }
 }
 
+private struct WordChip: View {
+    let text: String
+    let removed: Bool
+    let help: String
+    let toggle: () -> Void
+
+    var body: some View {
+        let color: Color = removed ? Color.red.opacity(0.8) : Color.primary
+        let fill: Color = removed ? Color.red.opacity(0.12) : Color.clear
+        Text(text)
+            .font(.system(size: 14))
+            .strikethrough(removed, color: .red)
+            .foregroundStyle(color)
+            .padding(.horizontal, 3)
+            .padding(.vertical, 1)
+            .background(RoundedRectangle(cornerRadius: 3).fill(fill))
+            .onTapGesture(perform: toggle)
+            .help(help)
+    }
+}
+
 struct EditByTextSheet: View {
     @ObservedObject var model: EditorModel
     let clipID: UUID
@@ -191,16 +212,10 @@ struct EditByTextSheet: View {
             } else {
                 ScrollView {
                     FlowLayout {
-                        ForEach(Array(words.enumerated()), id: \.offset) { i, w in
-                            let off = removed.contains(i)
-                            Text(w.text)
-                                .font(.system(size: 14))
-                                .strikethrough(off, color: .red)
-                                .foregroundStyle(off ? Color.red.opacity(0.8) : Color.primary)
-                                .padding(.horizontal, 3).padding(.vertical, 1)
-                                .background(RoundedRectangle(cornerRadius: 3).fill(off ? Color.red.opacity(0.12) : Color.clear))
-                                .onTapGesture { if off { removed.remove(i) } else { removed.insert(i) } }
-                                .help(w.start.timecode(fps: model.fps))
+                        ForEach(words.indices, id: \.self) { i in
+                            WordChip(text: words[i].text, removed: removed.contains(i), help: words[i].start.timecode(fps: model.fps)) {
+                                if removed.contains(i) { removed.remove(i) } else { removed.insert(i) }
+                            }
                         }
                     }
                     .padding(8)
