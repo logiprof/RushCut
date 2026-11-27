@@ -54,7 +54,7 @@ struct TransportBar: View {
             }
             .lineLimit(1)
             .fixedSize()
-            LevelMeter()
+            LevelMeter(model: model)
             Spacer(minLength: 8)
             Button { playback.seek(to: .zero) } label: { Image(systemName: "backward.end.fill") }
                 .help("Aller au début")

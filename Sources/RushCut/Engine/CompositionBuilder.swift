@@ -80,6 +80,21 @@ enum CompositionBuilder {
             return placed
         }
 
+        /// Son à insérer pour un clip : le son traité à l'avance s'il existe (il commence alors à 0), sinon l'original.
+        func audioSource(_ clip: Clip, url: URL, asset: AVURLAsset, assetDuration: RTime) async -> (AVAssetTrack, Clip, RTime)? {
+            if let processed = AudioPreprocessor.processedURL(clip, sourceURL: url) {
+                let pa = AssetCache.shared.asset(for: processed)
+                if let t = try? await pa.loadTracks(withMediaType: .audio).first {
+                    var c = clip
+                    c.sourceIn = .zero
+                    let d = RTime((try? await pa.load(.duration)) ?? .zero)
+                    return (t, c, d)
+                }
+            }
+            guard let t = try? await asset.loadTracks(withMediaType: .audio).first else { return nil }
+            return (t, clip, assetDuration)
+        }
+
         for (trackIndex, track) in project.tracks.enumerated() {
             if track.kind.isVisual {
                 // La piste principale alterne deux pistes de composition pour que les transitions se chevauchent.
@@ -132,10 +147,10 @@ enum CompositionBuilder {
 
                         // Son de la vidéo (sauf s'il a été détaché ou coupé).
                         if media.hasAudio, !clip.audio.isMuted, !track.isMuted,
-                           let sourceAudio = try? await asset.loadTracks(withMediaType: .audio).first {
+                           let src = await audioSource(clip, url: url, asset: asset, assetDuration: assetDuration) {
                             while audioTracks.count <= lane { if let t = newAudioTrack() { audioTracks.append((t, [])) } else { break } }
                             guard audioTracks.indices.contains(lane),
-                                  insert(sourceAudio, clip: clip, assetDuration: assetDuration, into: audioTracks[lane].0) != nil else { continue }
+                                  insert(src.0, clip: src.1, assetDuration: src.2, into: audioTracks[lane].0) != nil else { continue }
                             var fadeIn = clip.audio.fadeIn, fadeOut = clip.audio.fadeOut
                             if let t = clip.transitionIn { fadeIn = max(fadeIn, t.duration) }
                             if track.isMain, clipIndex + 1 < track.clips.count, let next = track.clips[clipIndex + 1].transitionIn {
@@ -157,10 +172,10 @@ enum CompositionBuilder {
                     guard let media = project.media(clip.mediaID), media.kind == .audio || media.hasAudio,
                           let url = resolve(media) else { continue }
                     let asset = AssetCache.shared.asset(for: url)
-                    guard let sourceAudio = try? await asset.loadTracks(withMediaType: .audio).first else { continue }
                     let assetDuration = RTime((try? await asset.load(.duration)) ?? .zero)
+                    guard let src = await audioSource(clip, url: url, asset: asset, assetDuration: assetDuration) else { continue }
                     if audioTrack == nil { audioTrack = newAudioTrack() }
-                    guard let at = audioTrack, let placed = insert(sourceAudio, clip: clip, assetDuration: assetDuration, into: at) else { continue }
+                    guard let at = audioTrack, let placed = insert(src.0, clip: src.1, assetDuration: src.2, into: at) else { continue }
                     if abs(clip.speed.rate - 1) > 0.0001 && !clip.speed.preservePitch { varispeed = true }
                     segments.append(AudioSegment(clip: clip, start: clip.start, end: clip.start + placed, fadeIn: clip.audio.fadeIn, fadeOut: clip.audio.fadeOut))
                 }
@@ -185,7 +200,6 @@ enum CompositionBuilder {
         for (track, segments) in audioGroups where !segments.isEmpty {
             let p = AVMutableAudioMixInputParameters(track: track)
             for segment in segments { applyVolume(p, segment: segment) }
-            AudioProcessing.attach(to: p, segments: segments)
             parameters.append(p)
         }
         var mix: AVMutableAudioMix?

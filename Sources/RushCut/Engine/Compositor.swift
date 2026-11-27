@@ -452,8 +452,3 @@ enum CompositorTools {
 }
 
 /// Traitement audio supplémentaire (gain au-delà de 0 dB, réduction de bruit…) : voir lot V1-C.
-enum AudioProcessing {
-    static func attach(to params: AVMutableAudioMixInputParameters, segments: [AudioSegment]) {
-        AudioTap.attach(to: params, segments: segments)
-    }
-}

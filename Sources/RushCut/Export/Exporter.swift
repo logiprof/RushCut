@@ -152,6 +152,7 @@ final class Exporter: @unchecked Sendable {
         var settings = settings
         if settings.codec == .prores422 { settings.container = .mov }
         let outputSize = ExportSettings.outputSize(project: project.settings, resolution: settings.resolution)
+        await AudioPreprocessor.prepare(project, resolve: resolve)
         let built = try await CompositionBuilder.build(project: project, renderSize: outputSize,
                                                        frameRate: settings.frameRate, resolve: resolve)
 

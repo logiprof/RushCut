@@ -53,6 +53,7 @@ final class EditorModel: ObservableObject {
     var attributeClipboard: Clip?
     @Published var subtitleStatus: String?
     @Published var subtitleBusy = false
+    private var audioTask: Task<Void, Never>?
     @Published var timelineVisibleWidth: CGFloat = 800
 
     let playback = PlaybackController()
@@ -160,11 +161,25 @@ final class EditorModel: ObservableObject {
         return p.hashValue
     }
 
-    private func rebuild(immediately: Bool = false) {
+    /// Prépare en arrière-plan les sons traités (gain > 0 dB, réduction de bruit), puis rafraîchit l'aperçu.
+    private func scheduleAudioPreprocessing(_ snapshot: Project) {
+        guard !AudioPreprocessor.missing(snapshot).isEmpty else { return }
+        audioTask?.cancel()
+        audioTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            if Task.isCancelled { return }
+            await AudioPreprocessor.prepare(snapshot)
+            if Task.isCancelled { return }
+            self?.rebuild(immediately: true)
+        }
+    }
+
+    func rebuild(immediately: Bool = false) {
         rebuildTask?.cancel()
         let snapshot = project
-        let signature = structureSignature(snapshot)
+        let signature = structureSignature(snapshot) &+ AudioPreprocessor.signature(snapshot)
         let swapOnly = signature == loadedStructure
+        scheduleAudioPreprocessing(snapshot)
         rebuildTask = Task { [weak self] in
             if !immediately && !swapOnly {
                 try? await Task.sleep(nanoseconds: 40_000_000)

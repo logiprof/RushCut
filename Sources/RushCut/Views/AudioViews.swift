@@ -195,17 +195,17 @@ struct VoiceOverSheet: View {
     }
 }
 
-/// Vu-mètre stéréo (niveaux de sortie de la lecture).
+/// Vu-mètre de la lecture (rouge : saturation).
 struct LevelMeter: View {
+    @ObservedObject var model: EditorModel
+
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 30)) { _ in
-            let (l, r) = AudioMeter.shared.levels()
-            HStack(spacing: 2) {
-                bar(l)
-                bar(r)
-            }
-            .frame(width: 12, height: 26)
-            .help("Niveau du son (rouge : saturation)")
+            let level = AudioMeter.level(project: model.project, waveforms: model.library.waveforms,
+                                         at: model.playback.currentTime, playing: model.playback.isPlaying)
+            bar(level)
+                .frame(width: 7, height: 26)
+                .help("Niveau du son (rouge : saturation)")
         }
     }
 
