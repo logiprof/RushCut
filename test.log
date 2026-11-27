@@ -1,0 +1,1504 @@
+Building for debugging...
+[0/11] Write sources
+[0/11] /Users/runner/work/RushCut/RushCut/.build/x86_64-apple-macosx/debug/RushCutPackageTests.derived/runner.swift
+[1/11] Write sources
+[4/11] Write RushCut-entitlement.plist
+[5/11] Write swift-version-7974D3F7F03D5E95.txt
+[7/61] Compiling RushCut AppModel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[8/61] Compiling RushCut Commands.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[9/61] Compiling RushCut RushCutApp.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[10/61] Compiling RushCut AudioMeter.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[11/61] Compiling RushCut AudioProcessor.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[12/61] Compiling RushCut Loudness.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[13/61] Compiling RushCut SoundLibrary.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[14/61] Compiling RushCut Synth.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[15/61] Compiling RushCut ProjectEditing.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[16/61] Compiling RushCut SpeedCurves.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[17/61] Compiling RushCut UndoStack.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[18/61] Compiling RushCut AudioActions.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[19/61] Compiling RushCut EditorActions.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[20/61] Compiling RushCut EditorModel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[21/61] Compiling RushCut MediaLibrary.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[22/61] Compiling RushCut PlaybackController.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[23/61] Compiling RushCut SubtitleActions.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+[24/61] Compiling RushCut VideoWriter.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[25/61] Compiling RushCut VisionEffects.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[26/61] Compiling RushCut Exporter.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[27/61] Compiling RushCut ExtraExporters.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[28/61] Compiling RushCut AnalysisTools.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[29/61] Compiling RushCut MediaAnalyzer.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[30/61] Compiling RushCut MediaPreviews.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[31/61] Compiling RushCut MediaTools.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[32/61] Compiling RushCut ScreenRecorder.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[33/61] Compiling RushCut Animation.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[34/61] Compiling RushCut Geometry.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[35/61] Compiling RushCut Project.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[36/61] Compiling RushCut RTime.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[37/61] Compiling RushCut ProjectStore.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[38/61] Compiling RushCut Support.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[39/61] Compiling RushCut Speech.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[40/61] Emitting module RushCut
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[41/61] Compiling RushCut ToolActions.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[42/61] Compiling RushCut V2Actions.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[43/61] Compiling RushCut AnimationCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[44/61] Compiling RushCut ColorPipeline.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[45/61] Compiling RushCut EffectCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[46/61] Compiling RushCut EffectHelpers.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[47/61] Compiling RushCut FilterCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[48/61] Compiling RushCut Frames.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[49/61] Compiling RushCut Particles.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[50/61] Compiling RushCut StickerCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[51/61] Compiling RushCut TextStyleCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[52/61] Compiling RushCut TransitionCatalog.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[53/61] Compiling RushCut CompositionBuilder.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[54/61] Compiling RushCut Compositor.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[55/61] Compiling RushCut ImageSourceCache.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[56/61] Compiling RushCut TextRenderer.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[57/77] Compiling RushCut Subtitles.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[58/77] Compiling RushCut AudioViews.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[59/77] Compiling RushCut CatalogLibrary.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[60/77] Compiling RushCut CatalogThumbnails.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[61/77] Compiling RushCut ClipInspectorTabs.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[62/77] Compiling RushCut ClipView.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[63/77] Compiling RushCut EditorView.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[64/77] Compiling RushCut ExportSheet.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[65/77] Compiling RushCut HomeView.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[66/77] Compiling RushCut InspectorPanel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[67/77] Compiling RushCut LibraryPanel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[68/77] Compiling RushCut PlayerPanel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[69/77] Compiling RushCut SubtitlesPanel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[70/77] Compiling RushCut TimelinePanel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[71/77] Compiling RushCut ToolSheets.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[72/77] Compiling RushCut V2Views.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[72/77] Write Objects.LinkFileList
+[73/77] Linking RushCut
+[74/77] Applying RushCut
+[76/87] Compiling RushCutTests PersistenceTests.swift
+[77/87] Compiling RushCutTests SubtitleTests.swift
+[78/87] Compiling RushCutTests TestSupport.swift
+[79/89] Compiling RushCutTests AudioTests.swift
+[80/89] Compiling RushCutTests DemoProjectTests.swift
+[81/89] Compiling RushCutTests EditingV1Tests.swift
+[82/89] Emitting module RushCutTests
+[83/89] Compiling RushCutTests EngineV1Tests.swift
+[84/89] Compiling RushCutTests ExportTests.swift
+[85/89] Compiling RushCutTests ModelTests.swift
+[86/89] Compiling RushCutTests ToolsTests.swift
+/Users/runner/work/RushCut/RushCut/Tests/RushCutTests/V2Tests.swift:42:27: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 40 |         for effect in VoiceEffects.all {
+ 41 |             var fx = VoiceFX(id: effect.id)
+ 42 |             var samples = (0..<9600).map { i in Float(sin(Double(i) * 2 * .pi * 220 / 48_000) * 0.5) }
+    |                           `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 43 |             samples.withUnsafeMutableBufferPointer { fx.process($0.baseAddress!, frames: 4800) }
+ 44 |             #expect(samples.allSatisfy { $0.isFinite && abs($0) <= 1 }, "\(effect.id)")
+[87/89] Compiling RushCutTests V2Tests.swift
+/Users/runner/work/RushCut/RushCut/Tests/RushCutTests/V2Tests.swift:42:27: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 40 |         for effect in VoiceEffects.all {
+ 41 |             var fx = VoiceFX(id: effect.id)
+ 42 |             var samples = (0..<9600).map { i in Float(sin(Double(i) * 2 * .pi * 220 / 48_000) * 0.5) }
+    |                           `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 43 |             samples.withUnsafeMutableBufferPointer { fx.process($0.baseAddress!, frames: 4800) }
+ 44 |             #expect(samples.allSatisfy { $0.isFinite && abs($0) <= 1 }, "\(effect.id)")
+error: fatalError

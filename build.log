@@ -1,0 +1,91 @@
+Building for production...
+[0/4] Write sources
+[1/4] Write swift-version-7974D3F7F03D5E95.txt
+[3/5] Compiling RushCut AppModel.swift
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/App/Commands.swift:199:23: warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+197 |         guard monitor == nil else { return }
+198 |         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+199 |             MainActor.assumeIsolated { KeyboardMonitor.shared.handle(event) }
+    |                       `- warning: conformance of 'NSEvent' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+200 |         }
+201 |     }
+
+:1:1: note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+1 | @_nonSendable(_assumed)
+  | `- note: conformance of 'NSEvent' to 'Sendable' has been explicitly marked unavailable here
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/CompositionBuilder.swift:202:32: warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+200 |                               layers: layers, fps: fps)
+201 |         let size = renderSize ?? project.settings.canvasSize
+202 |         let videoComposition = AVMutableVideoComposition()
+    |                                `- warning: 'AVMutableVideoComposition' was deprecated in macOS 26.0: Use AVVideoComposition.Configuration instead [#DeprecatedDeclaration]
+203 |         videoComposition.customVideoCompositorClass = RushCompositor.self
+204 |         videoComposition.renderSize = CGSize(width: max(16, size.width.rounded()), height: max(16, size.height.rounded()))
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Engine/Compositor.swift:42:9: warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 40 |     let enablePostProcessing: Bool = false
+ 41 |     let containsTweening: Bool = true
+ 42 |     let requiredSourceTrackIDs: [NSValue]?
+    |         `- warning: stored property 'requiredSourceTrackIDs' of 'Sendable'-conforming class 'RushInstruction' has non-Sendable type '[NSValue]?'
+ 43 |     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
+ 44 |     let plan: RenderPlan
+
+Swift.Optional:1:21: note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+1 | @frozen public enum Optional<Wrapped> : ~Copyable, ~Escapable where Wrapped : ~Copyable, Wrapped : ~Escapable {
+  |                     `- note: generic enum 'Optional' does not conform to the 'Sendable' protocol
+2 |     case none
+3 |     case some(Wrapped)
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:311:23: warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+309 |         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+310 |             input.requestMediaDataWhenReady(on: queue) { [self] in
+311 |                 while input.isReadyForMoreMediaData && !state.finished {
+    |                       `- warning: capture of 'input' with non-Sendable type 'AVAssetWriterInput' in a '@Sendable' closure [#SendableClosureCaptures]
+312 |                     if self.isCancelled {
+313 |                         state.finished = true
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetWriterInput.h:39:12: note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 37 | NS_SWIFT_NONSENDABLE
+ 38 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 39 | @interface AVAssetWriterInput : NSObject
+    |            `- note: class 'AVAssetWriterInput' does not conform to the 'Sendable' protocol
+ 40 | {
+ 41 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Export/Exporter.swift:317:37: warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+315 |                         return
+316 |                     }
+317 |                     if let sample = output.copyNextSampleBuffer() {
+    |                                     `- warning: capture of 'output' with non-Sendable type 'AVAssetReaderOutput' in a '@Sendable' closure [#SendableClosureCaptures]
+318 |                         let time = CMSampleBufferGetPresentationTimeStamp(sample)
+319 |                         if !input.append(sample) {
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/AVFoundation.framework/Headers/AVAssetReaderOutput.h:43:12: note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 41 | NS_SWIFT_NONSENDABLE
+ 42 | API_AVAILABLE(macos(10.7), ios(4.1), tvos(9.0), visionos(1.0)) API_UNAVAILABLE(watchos)
+ 43 | @interface AVAssetReaderOutput : NSObject
+    |            `- note: class 'AVAssetReaderOutput' does not conform to the 'Sendable' protocol
+ 44 | {
+ 45 | @private
+
+/Users/runner/work/RushCut/RushCut/Sources/RushCut/Views/CatalogThumbnails.swift:77:54: warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 75 |                     }
+ 76 |                 }
+ 77 |                 cache.setObject(Box(images), forKey: k)
+    |                                                      `- warning: capture of 'k' with non-Sendable type 'NSString' in a '@Sendable' closure [#SendableClosureCaptures]
+ 78 |                 continuation.resume(returning: images)
+ 79 |             }
+
+/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSString.h:103:12: note: class 'NSString' does not conform to the 'Sendable' protocol
+101 | 
+102 | 
+103 | @interface NSString : NSObject <NSCopying, NSMutableCopying, NSSecureCoding>
+    |            `- note: class 'NSString' does not conform to the 'Sendable' protocol
+104 | 
+105 | #pragma mark *** String funnel methods ***
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[#SendableClosureCaptures]: <https://docs.swift.org/compiler/documentation/diagnostics/sendable-closure-captures>
+[3/5] Write Objects.LinkFileList
+[4/5] Linking RushCut
+Build complete! (142.49s)

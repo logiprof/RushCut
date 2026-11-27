@@ -1,0 +1,5 @@
+test.log:/Users/runner/work/RushCut/RushCut/Tests/RushCutTests/V2Tests.swift:42:27: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+test.log:    |                           `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+test.log:/Users/runner/work/RushCut/RushCut/Tests/RushCutTests/V2Tests.swift:42:27: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+test.log:    |                           `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+test.log:error: fatalError
